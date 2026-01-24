@@ -2,10 +2,7 @@ package org.amouri.ecommerce.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.amouri.ecommerce.DTOs.ProductPurchasedRequest;
-import org.amouri.ecommerce.DTOs.ProductPurchasedResponse;
-import org.amouri.ecommerce.DTOs.ProductRequest;
-import org.amouri.ecommerce.DTOs.ProductResponse;
+import org.amouri.ecommerce.DTOs.*;
 import org.amouri.ecommerce.services.ProductService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +18,7 @@ public class ProductController {
 
     private final ProductService service;
 
-    @PostMapping(name = "/create-product", consumes = "multipart/form-data")
+    @PostMapping(value = "/create-product", consumes = "multipart/form-data")
     public ResponseEntity<Integer> createProduct(
             @RequestPart("product") @Valid ProductRequest request,
             @RequestPart("files") List<MultipartFile> files
@@ -29,11 +26,37 @@ public class ProductController {
         return ResponseEntity.ok(service.createProduct(request, files));
     }
 
+    @PostMapping(value = "/{product-id}/images", consumes = "multipart/form-data")
+    public ResponseEntity<Void> addProductImages(
+            @PathVariable(name = "product-id") Integer productId,
+            @RequestPart("files") List<MultipartFile> files
+    ) {
+        service.addProductImages(productId, files);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/purchase")
     public ResponseEntity<Set<ProductPurchasedResponse>> purchaseProducts(
             @RequestBody @Valid Set<ProductPurchasedRequest> request
     ) {
         return ResponseEntity.ok(service.purchaseProducts(request));
+    }
+
+    @PatchMapping("/{product-id}")
+    public ResponseEntity<ProductResponse> updateProduct(
+            @PathVariable(name = "product-id") Integer productId,
+            @RequestBody @Valid UpdateProductRequest request
+    ) {
+        return ResponseEntity.ok(service.updateProduct(productId, request));
+    }
+
+    @PutMapping("/{product-id}/images/reorder")
+    public ResponseEntity<Void> reorderProductImages(
+            @PathVariable(name = "product-id") Integer productId,
+            @RequestBody List<Integer> imageIds
+    ) {
+        service.reorderProductImages(productId, imageIds);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{product-id}")
@@ -46,5 +69,22 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<List<ProductResponse>> findAll() {
         return ResponseEntity.ok(service.findAll());
+    }
+
+    @DeleteMapping("/{product-id}")
+    public ResponseEntity<Void> deleteProduct(
+            @PathVariable(name = "product-id") Integer productId
+    ) {
+        service.deleteProduct(productId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{product-id}/images/{image-id}")
+    public ResponseEntity<Void> deleteProductImages(
+            @PathVariable(name = "product-id") Integer productId,
+            @PathVariable(name = "image-id") Integer imageId
+    ) {
+        service.deleteProductImage(productId, imageId);
+        return ResponseEntity.noContent().build();
     }
 }

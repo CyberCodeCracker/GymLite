@@ -4,6 +4,7 @@ import org.amouri.ecommerce.DTOs.ProductPurchasedRequest;
 import org.amouri.ecommerce.DTOs.ProductPurchasedResponse;
 import org.amouri.ecommerce.DTOs.ProductRequest;
 import org.amouri.ecommerce.DTOs.ProductResponse;
+import org.amouri.ecommerce.DTOs.UpdateProductRequest;
 import org.amouri.ecommerce.entities.Product;
 import org.amouri.ecommerce.entities.ProductImage;
 import org.mapstruct.*;
@@ -25,7 +26,10 @@ public interface ProductMapper {
     ProductPurchasedResponse toProductPurchasedResponse(Product product);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateProductFromRequest(ProductRequest request, @MappingTarget Product product);
+    @Mapping(target = "category", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "images", ignore = true)
+    void updateProductFromRequest(UpdateProductRequest request, @MappingTarget Product product);
 
     default List<String> mapImageUrls(Product product) {
         if (product.getImages() == null) {

@@ -42,4 +42,5 @@ public class Product {
         images.remove(image);
         image.setProduct(null);
     }
+
 }

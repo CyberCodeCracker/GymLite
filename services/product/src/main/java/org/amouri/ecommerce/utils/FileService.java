@@ -12,7 +12,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -48,6 +50,36 @@ public class FileService {
             return deleted;
         } catch (IOException e) {
             log.error("Failed to delete file: {}", filePath, e);
+            return false;
+        }
+    }
+
+    public boolean deleteProductFolder(@NonNull Integer productId) {
+        String productFolderPath = fileUploadPath + File.separator + "products" + File.separator + productId;
+        Path folderPath = Paths.get(productFolderPath);
+
+        if (!Files.exists(folderPath)) {
+            log.warn("Product folder does not exist: {}", productFolderPath);
+            return false;
+        }
+
+        try {
+            // Delete folder and all contents recursively
+            try (Stream<Path> walk = Files.walk(folderPath)) {
+                walk.sorted(Comparator.reverseOrder()) // Delete files before directories
+                        .forEach(path -> {
+                            try {
+                                Files.delete(path);
+                            } catch (IOException e) {
+                                log.error("Failed to delete: {}", path, e);
+                            }
+                        });
+            }
+
+            log.info("Product folder deleted: {}", productFolderPath);
+            return true;
+        } catch (IOException e) {
+            log.error("Failed to delete product folder: {}", productFolderPath, e);
             return false;
         }
     }
