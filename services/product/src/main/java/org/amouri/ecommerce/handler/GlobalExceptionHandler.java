@@ -1,6 +1,7 @@
 package org.amouri.ecommerce.handler;
 
-import org.amouri.ecommerce.exceptions.CustomerNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
+import org.amouri.ecommerce.exception.ProductPurchaseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -13,11 +14,19 @@ import java.util.HashMap;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(CustomerNotFoundException.class)
-    public ResponseEntity<String> handleCustomerNotFoundException(CustomerNotFoundException ex) {
+    @ExceptionHandler(ProductPurchaseException.class)
+    public ResponseEntity<String> handleCustomerNotFoundException(ProductPurchaseException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                . body(ex.getMessage())
+                ;
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<String> handleCustomerNotFoundException(EntityNotFoundException ex) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                .body(ex.getMessage())
+                . body(ex.getMessage())
                 ;
     }
 

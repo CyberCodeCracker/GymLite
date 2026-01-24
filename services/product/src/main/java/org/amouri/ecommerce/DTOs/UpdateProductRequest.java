@@ -1,17 +1,16 @@
 package org.amouri.ecommerce.DTOs;
 
-import java.math.BigDecimal;
-import java.util.List;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
-public record ProductResponse(
+import java.math.BigDecimal;
+
+public record UpdateProductRequest(
         Integer id,
         String name,
         String description,
         double availableQuantity,
         BigDecimal price,
-        Integer categoryId,
-        String categoryName,
-        String categoryDescription,
-        List<String> imageUrls
+        Integer categoryId
 ) {
 }

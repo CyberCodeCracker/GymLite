@@ -9,6 +9,7 @@ import org.amouri.ecommerce.DTOs.ProductResponse;
 import org.amouri.ecommerce.services.ProductService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Set;
@@ -20,11 +21,12 @@ public class ProductController {
 
     private final ProductService service;
 
-    @PostMapping
+    @PostMapping(name = "/create-product", consumes = "multipart/form-data")
     public ResponseEntity<Integer> createProduct(
-            @RequestBody @Valid ProductRequest request
+            @RequestPart("product") @Valid ProductRequest request,
+            @RequestPart("files") List<MultipartFile> files
     ) {
-        return ResponseEntity.ok(service.createProduct(request));
+        return ResponseEntity.ok(service.createProduct(request, files));
     }
 
     @PostMapping("/purchase")

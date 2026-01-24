@@ -3,3 +3,13 @@ spring:
     import: optional:configserver:http://localhost:8888
   application:
     name: product-service
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+  file:
+    uploads:
+      media-output-path: ./uploads
+
+springdoc:
+  default-produces-media-type: application/json

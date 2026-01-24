@@ -1,4 +1,12 @@
 package org.amouri.ecommerce.DTOs;
 
-public record ProductPurchasedResponse() {
+import java.math.BigDecimal;
+
+public record ProductPurchasedResponse(
+        Integer id,
+        String name,
+        String description,
+        BigDecimal price,
+        double availableQuantity
+) {
 }
