@@ -184,10 +184,8 @@ public class ProductService {
     public ProductResponse updateProduct(Integer productId, @Valid UpdateProductRequest request) {
         var product = findProductById(productId);
 
-        // Update basic fields
         mapper.updateProductFromRequest(request, product);
 
-        // Handle category update if provided
         if (request.categoryId() != null) {
             Category category = categoryRepository.findById(request.categoryId())
                     .orElseThrow(() -> new EntityNotFoundException(
@@ -196,7 +194,6 @@ public class ProductService {
             product.setCategory(category);
         }
 
-        // repository.save(product); // Not needed if @Transactional - changes auto-persisted
         return mapper.toProductResponse(product);
     }
 
@@ -207,7 +204,7 @@ public class ProductService {
         }
     }
 
-    private Product findProductById(Integer productId) throws EntityNotFoundException {
+    public Product findProductById(Integer productId) {
         return productRepository.findById(productId)
                 .orElseThrow(
                         () -> new EntityNotFoundException("Product not found with ID:: " + productId)

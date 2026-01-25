@@ -17,7 +17,7 @@ public class ProductImage {
 
     private String imageUrl;
 
-    private Integer displayOrder; // For ordering images
+    private Integer displayOrder;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
