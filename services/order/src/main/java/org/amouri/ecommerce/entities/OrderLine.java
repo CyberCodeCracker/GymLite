@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.math.BigDecimal;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -11,17 +13,19 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Builder
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class ProductImage {
+public class OrderLine {
 
     @Id
     @GeneratedValue
-    private Integer id;
+    public Integer id;
 
-    private String imageUrl;
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
 
-    private Integer displayOrder;
+    private Integer productId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    private double quantity;
+
+    private BigDecimal unitPrice;
 }

@@ -2,6 +2,7 @@ package org.amouri.ecommerce.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.List;
 @Setter
 @Builder
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class Product {
 
     @Id

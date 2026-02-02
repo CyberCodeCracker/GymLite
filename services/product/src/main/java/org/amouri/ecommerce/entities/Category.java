@@ -2,6 +2,7 @@ package org.amouri.ecommerce.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.List;
 import java.util.Set;
@@ -12,6 +13,7 @@ import java.util.Set;
 @Setter
 @Builder
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class Category {
 
     @Id
