@@ -2,9 +2,11 @@ package org.amouri.ecommerce.services;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.amouri.ecommerce.DTOs.OrderConfirmation;
 import org.amouri.ecommerce.DTOs.OrderLineRequest;
 import org.amouri.ecommerce.DTOs.OrderRequest;
 import org.amouri.ecommerce.DTOs.PurchaseRequest;
+import org.amouri.ecommerce.kafka.OrderProducer;
 import org.amouri.ecommerce.exception.BusinessException;
 import org.amouri.ecommerce.interfaces.CustomerClient;
 import org.amouri.ecommerce.mappers.OrderMapper;
@@ -20,6 +22,7 @@ public class OrderService {
     private final OrderRepository repository;
     private final OrderMapper mapper;
     private final OrderLineService orderLineService;
+    private final OrderProducer orderProducer;
 
     public Integer createOrder(@Valid OrderRequest request) {
 
@@ -27,7 +30,7 @@ public class OrderService {
                 .orElseThrow(() -> new BusinessException("Cannot create order:: No customer exists with ID: " + request.customerId())
                 );
 
-        this.productClient.purchaseProducts(request.products());
+        var purchasedProducts = this.productClient.purchaseProducts(request.products());
 
         var order = this.repository.save(mapper.toOrder(request));
 
@@ -43,6 +46,16 @@ public class OrderService {
 
         }
 
-        return null;
+        orderProducer.sendOrderConfirmation(
+                new OrderConfirmation(
+                        request.reference(),
+                        request.totalAmount(),
+                        request.paymentMethod(),
+                        customer,
+                        purchasedProducts
+                )
+        );
+        
+        return order.getId();
     }
 }
