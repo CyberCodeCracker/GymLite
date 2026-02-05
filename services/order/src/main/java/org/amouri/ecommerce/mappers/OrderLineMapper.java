@@ -1,6 +1,7 @@
 package org.amouri.ecommerce.mappers;
 
 import org.amouri.ecommerce.DTOs.OrderLineRequest;
+import org.amouri.ecommerce.DTOs.OrderLineResponse;
 import org.amouri.ecommerce.entities.Order;
 import org.amouri.ecommerce.entities.OrderLine;
 import org.springframework.stereotype.Service;
@@ -19,5 +20,12 @@ public class OrderLineMapper {
                 .productId(request.productId())
                 .quantity(request.quantity())
                 .build();
+    }
+
+    public OrderLineResponse toOrderLineResponse(OrderLine orderLine) {
+        return new OrderLineResponse(
+                orderLine.getId(),
+                orderLine.getQuantity()
+        );
     }
 }
