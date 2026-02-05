@@ -1,6 +1,7 @@
 package org.amouri.ecommerce.mappers;
 
 import org.amouri.ecommerce.DTOs.OrderRequest;
+import org.amouri.ecommerce.DTOs.OrderResponse;
 import org.amouri.ecommerce.entities.Order;
 import org.springframework.stereotype.Service;
 
@@ -16,5 +17,15 @@ public class OrderMapper {
                 .paymentMethod(request.paymentMethod())
                 .build()
                 ;
+    }
+
+    public OrderResponse toOrderResponse(Order order) {
+        return new OrderResponse(
+                order.getId(),
+                order.getReference(),
+                order.getTotalAmount(),
+                order.getPaymentMethod(),
+                order.getCustomerId()
+        );
     }
 }

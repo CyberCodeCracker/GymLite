@@ -1,17 +1,20 @@
 package org.amouri.ecommerce.services;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.amouri.ecommerce.DTOs.OrderConfirmation;
-import org.amouri.ecommerce.DTOs.OrderLineRequest;
-import org.amouri.ecommerce.DTOs.OrderRequest;
-import org.amouri.ecommerce.DTOs.PurchaseRequest;
-import org.amouri.ecommerce.kafka.OrderProducer;
+import org.amouri.ecommerce.DTOs.*;
+import org.amouri.ecommerce.entities.Order;
 import org.amouri.ecommerce.exception.BusinessException;
 import org.amouri.ecommerce.interfaces.CustomerClient;
+import org.amouri.ecommerce.kafka.OrderProducer;
 import org.amouri.ecommerce.mappers.OrderMapper;
 import org.amouri.ecommerce.repositories.OrderRepository;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -57,5 +60,25 @@ public class OrderService {
         );
         
         return order.getId();
+    }
+
+    public List<OrderResponse> getAll() {
+        return repository.findAll()
+                .stream()
+                .map(mapper::toOrderResponse)
+                .collect(Collectors.toList())
+                ;
+    }
+
+    public OrderResponse getById(Integer orderId) {
+        var order = getorderById(orderId);
+        return mapper.toOrderResponse(order);
+    }
+
+    private Order getorderById(Integer orderId) {
+        return repository.findById(orderId)
+                 .orElseThrow(
+                        () -> new EntityNotFoundException("Cannot get order:: No order exists with ID: " + orderId)
+                );
     }
 }
