@@ -16,3 +16,6 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         spring.json.type.mapping: paymentNotificationRequest:org.amouri.ecommerce.DTOs.PaymentNotificationRequest
+
+server:
+  port: 8060

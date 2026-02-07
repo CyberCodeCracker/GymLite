@@ -7,10 +7,10 @@ import org.amouri.ecommerce.DTOs.*;
 import org.amouri.ecommerce.entities.Order;
 import org.amouri.ecommerce.exception.BusinessException;
 import org.amouri.ecommerce.interfaces.CustomerClient;
+import org.amouri.ecommerce.interfaces.PaymentClient;
 import org.amouri.ecommerce.kafka.OrderProducer;
 import org.amouri.ecommerce.mappers.OrderMapper;
 import org.amouri.ecommerce.repositories.OrderRepository;
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +22,7 @@ public class OrderService {
 
     private final CustomerClient customerClient;
     private final ProductClient productClient;
+    private final PaymentClient paymentClient;
     private final OrderRepository repository;
     private final OrderMapper mapper;
     private final OrderLineService orderLineService;
@@ -48,6 +49,16 @@ public class OrderService {
             );
 
         }
+
+        paymentClient.requestOrderPayment(
+                new PaymentRequest(
+                        request.totalAmount(),
+                        request.paymentMethod(),
+                        order.getId(),
+                        order.getReference(),
+                        customer
+                )
+        );
 
         orderProducer.sendOrderConfirmation(
                 new OrderConfirmation(
