@@ -9,33 +9,27 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "customer_order")
-public class Order {
+@Table(name = "payment")
+public class Payment {
 
     @Id
     @GeneratedValue
     private Integer id;
 
-    private String reference;
-
-    private BigDecimal totalAmount;
+    private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
 
-    private Integer customerId;
-
-    @OneToMany(mappedBy = "order")
-    private List<OrderLine> orderLines;
+    private Integer orderId;
 
     @CreatedDate
     @Column(updatable = false, nullable = false)
