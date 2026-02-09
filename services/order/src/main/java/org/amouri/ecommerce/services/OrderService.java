@@ -50,7 +50,7 @@ public class OrderService {
 
         }
 
-        paymentClient.requestOrderPayment(
+        paymentClient.createPayment(
                 new PaymentRequest(
                         request.totalAmount(),
                         request.paymentMethod(),
