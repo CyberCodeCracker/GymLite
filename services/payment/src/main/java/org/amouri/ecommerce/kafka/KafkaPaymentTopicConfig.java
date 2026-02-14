@@ -29,6 +29,7 @@ public class KafkaPaymentTopicConfig {
                 ;
     }
 
+
     @Bean
     public ProducerFactory<String, Object> producerFactory() {
 

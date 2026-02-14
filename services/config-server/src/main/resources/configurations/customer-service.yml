@@ -1,13 +1,7 @@
 spring:
   data:
     mongodb:
-      username: glite
-      password: GliteEcom$200
-      host: localhost
-      port: 27017
-      database: customer
-      authentication-database: admin
+      uri: mongodb://glite:GliteEcom200@localhost:27017/customer?authSource=admin
 
 server:
   port: 8090
-

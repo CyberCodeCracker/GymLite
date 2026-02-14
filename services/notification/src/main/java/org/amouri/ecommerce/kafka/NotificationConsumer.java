@@ -35,13 +35,13 @@ public class NotificationConsumer {
                         .build()
         );
 
-        var customerName = paymentConfirmation.customerFirstName() + " " + paymentConfirmation.customerLastName();
+        var customerName = paymentConfirmation.getCustomerFirstName() + " " + paymentConfirmation.getCustomerLastName();
 
         emailService.sendPaymentSuccessEmail(
-                paymentConfirmation.customerEmail(),
+                paymentConfirmation.getCustomerEmail(),
                 customerName,
-                paymentConfirmation.amount(),
-                paymentConfirmation.orderReference()
+                paymentConfirmation.getAmount(),
+                paymentConfirmation.getOrderReference()
         );
 
     }
@@ -59,14 +59,14 @@ public class NotificationConsumer {
                         .build()
         );
 
-        var customerName = orderConfirmation.customer().firstName() + " " + orderConfirmation.customer().lastName();
+        var customerName = orderConfirmation.getCustomer().firstName() + " " + orderConfirmation.getCustomer().lastName();
 
         emailService.sendOrderConfirmationEmail(
-                orderConfirmation.customer().email(),
+                orderConfirmation.getCustomer().email(),
                 customerName,
-                orderConfirmation.totalAmount(),
-                orderConfirmation.orderReference(),
-                orderConfirmation.products()
+                orderConfirmation.getTotalAmount(),
+                orderConfirmation.getOrderReference(),
+                orderConfirmation.getProduct()
         );
 
     }

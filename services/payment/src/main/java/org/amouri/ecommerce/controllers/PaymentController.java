@@ -17,7 +17,6 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-
     @PostMapping
     public ResponseEntity<Integer> createPayment(
             @RequestBody @Valid PaymentRequest request

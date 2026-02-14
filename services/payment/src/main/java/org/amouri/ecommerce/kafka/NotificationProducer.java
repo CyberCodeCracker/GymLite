@@ -14,11 +14,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class NotificationProducer {
 
-    private final KafkaTemplate<String, PaymentNotificationRequest> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public void sendNotification(PaymentNotificationRequest paymentNotificationRequest) {
-
-        log.info("Sending payment notification paymentNotificationRequest: {}", paymentNotificationRequest);
 
         Message<PaymentNotificationRequest> message = MessageBuilder
                 .withPayload(paymentNotificationRequest)

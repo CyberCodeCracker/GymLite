@@ -1,15 +1,23 @@
 package org.amouri.ecommerce.DTOs;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.amouri.ecommerce.enums.PaymentMethod;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-public record OrderConfirmation(
-        String orderReference,
-        BigDecimal totalAmount,
-        PaymentMethod paymentMethod,
-        Customer customer,
-        List<Product> products
-) {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class OrderConfirmation {
+
+    private String orderReference;
+    private BigDecimal totalAmount;
+    private PaymentMethod paymentMethod;
+    private Customer customer;
+    private List<Product> product;
 }

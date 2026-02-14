@@ -1,0 +1,32 @@
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: customer-service
+              uri: lb:http://CUSTOMER-SERVICE
+              predicates:
+                - Path=/api/customer/**
+            - id: order-service
+              uri: lb:http://ORDER-SERVICE
+              predicates:
+                - Path=/api/order/**
+            - id: order-line-service
+              uri: lb:http://ORDER-SERVICE
+              predicates:
+                - Path=/api/order-line/**
+            - id: product-service
+              uri: lb:http://PRODUCT-SERVICE
+              predicates:
+                - Path=/api/product/**
+            - id: payment-service
+              uri: lb:http://PAYMENT-SERVICE
+              predicates:
+                - Path=/api/payment/**
+          discovery:
+            locator:
+              enabled: true
+
+server:
+  port: 8222
