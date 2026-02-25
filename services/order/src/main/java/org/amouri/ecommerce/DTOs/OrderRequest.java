@@ -16,7 +16,7 @@ public record OrderRequest(
         @NotNull(message = "Payment method should be precised")
         PaymentMethod paymentMethod,
         @NotNull(message = "Customer must be specified")
-        Integer customerId,
+        String customerId,
         @NotEmpty(message = "At least one product must be purchased")
         List<PurchaseRequest> products
 ) {

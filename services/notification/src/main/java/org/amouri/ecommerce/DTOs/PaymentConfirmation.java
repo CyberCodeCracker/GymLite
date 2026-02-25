@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 public class PaymentConfirmation {
 
     private String orderReference;
-    private BigDecimal amount;
+    private BigDecimal totalAmount;
     private PaymentMethod paymentMethod;
     private String customerFirstName;
     private String customerLastName;

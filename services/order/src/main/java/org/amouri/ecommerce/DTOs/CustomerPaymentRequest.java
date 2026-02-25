@@ -1,9 +1,7 @@
 package org.amouri.ecommerce.DTOs;
 
-public record CustomerResponse(
-        Integer id,
+public record CustomerPaymentRequest(
         String firstName,
         String lastName,
         String email
-) {
-}
+) {}

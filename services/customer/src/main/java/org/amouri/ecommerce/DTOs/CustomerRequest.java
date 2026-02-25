@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import org.amouri.ecommerce.entities.Address;
 
 public record CustomerRequest(
-        Integer id,
+        String id,
         @NotNull(message = "First name can't be empty")
         String firstName,
         @NotNull(message = "Last name can't be empty")

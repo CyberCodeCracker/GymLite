@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.amouri.ecommerce.DTOs.CustomerRequest;
 import org.amouri.ecommerce.DTOs.CustomerResponse;
+import org.amouri.ecommerce.entities.Customer;
 import org.amouri.ecommerce.services.CustomerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,21 +40,21 @@ public class CustomerController {
 
     @GetMapping("/exists/{customer-id}")
     public ResponseEntity<Boolean> existsById(
-            @PathVariable("customer-id") Integer id
+            @PathVariable("customer-id") String id
     ) {
         return ResponseEntity.ok(service.existsById(id));
     }
 
     @GetMapping("/{customer-id}")
     public ResponseEntity<CustomerResponse> findCustomerById(
-            @PathVariable("customer-id") Integer id
+            @PathVariable("customer-id") String id
     ) {
         return ResponseEntity.ok(service.findById(id));
     }
 
     @DeleteMapping("/{customer-id}")
     public ResponseEntity<Void> deleteById(
-            @PathVariable("customer-id") Integer id
+            @PathVariable("customer-id") String id
     ) {
         service.deleteById(id);
         return ResponseEntity.accepted().build();

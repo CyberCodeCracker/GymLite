@@ -17,10 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,7 +54,7 @@ public class ProductService {
         return product.getId();
     }
 
-    public Set<ProductPurchasedResponse> purchaseProducts(@Valid Set<ProductPurchasedRequest> request) {
+    public List<ProductPurchasedResponse> purchaseProducts(List<ProductPurchasedRequest> request) {
         var productsIds = request.stream()
                 .map(ProductPurchasedRequest::id)
                 .toList()
@@ -71,14 +68,14 @@ public class ProductService {
                 .sorted(Comparator.comparing(ProductPurchasedRequest::id))
                 .toList()
                 ;
-        var purchasedProducts = new HashSet<ProductPurchasedResponse>();
+        var purchasedProducts = new ArrayList<ProductPurchasedResponse>();
         for (int i = 0; i < storedProducts.size(); i++) {
             var product = storedProducts.get(i);
             var productRequest = storedRequest.get(i);
             if (product.getAvailableQuantity() < productRequest.availableQuantity()) {
                 throw new ProductPurchaseException("Available quantity is less than desired quantity for product with ID:: " + product.getId());
             }
-            var newAvailableQuantity = productRequest.availableQuantity() - product.getAvailableQuantity();
+            var newAvailableQuantity = product.getAvailableQuantity() - productRequest.availableQuantity();
             product.setAvailableQuantity(newAvailableQuantity);
             productRepository.save(product);
             purchasedProducts.add(mapper.toProductPurchasedResponse(product));

@@ -3,5 +3,9 @@ package org.amouri.ecommerce.repositories;
 import org.amouri.ecommerce.entities.Customer;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface CustomerRepository extends MongoRepository<Customer, Integer> {
+import java.util.Optional;
+
+public interface CustomerRepository extends MongoRepository<Customer, String> {
+
+    boolean existsByEmail(String email);
 }

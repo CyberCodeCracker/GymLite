@@ -20,7 +20,7 @@ public class OrderLineController {
 
     @GetMapping("/order/{order-id}")
     public ResponseEntity<List<OrderLineResponse>> getByOrderId(
-            @PathVariable Integer orderId
+            @PathVariable(value = "order-id") Integer orderId
     ) {
         return ResponseEntity.ok(orderLineService.getByOrderId(orderId));
     }

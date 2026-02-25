@@ -3,10 +3,10 @@ package org.amouri.ecommerce.DTOs;
 import java.math.BigDecimal;
 
 public record PurchaseResponse(
-         Integer productId,
+         Integer id,
          String name,
          String description,
          BigDecimal price,
-         double quantity
+         double availableQuantity
 ) {
 }

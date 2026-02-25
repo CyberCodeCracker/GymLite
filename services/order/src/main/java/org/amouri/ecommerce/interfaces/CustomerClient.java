@@ -1,6 +1,6 @@
 package org.amouri.ecommerce.interfaces;
 
-import org.amouri.ecommerce.DTOs.CustomerResponse;
+import org.amouri.ecommerce.DTOs.Customer;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,8 +14,8 @@ import java.util.Optional;
 public interface CustomerClient {
 
     @GetMapping("/{customer-id}")
-    Optional<CustomerResponse> findCustomerById(
-            @PathVariable(name = "customer-id") Integer customerId
+    Optional<Customer> findCustomerById(
+            @PathVariable(name = "customer-id") String customerId
     );
 
 }

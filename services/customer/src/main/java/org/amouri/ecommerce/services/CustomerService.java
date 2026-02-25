@@ -45,12 +45,12 @@ public class CustomerService {
                 ;
     }
 
-    public Boolean existsById(Integer id) {
+    public Boolean existsById(String id) {
         return repository.findById(id)
                 .isPresent();
     }
 
-    public CustomerResponse findById(Integer id) {
+    public CustomerResponse findById(String id) {
         return repository.findById(id)
                 .map(mapper::toCustomerResponse)
                 .orElseThrow(
@@ -59,7 +59,7 @@ public class CustomerService {
                 ;
     }
 
-    public void deleteById(Integer id) {
+    public void deleteById(String id) {
         repository.deleteById(id);
     }
 }

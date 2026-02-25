@@ -3,6 +3,7 @@ package org.amouri.ecommerce.kafka;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.amouri.ecommerce.DTOs.PaymentNotificationRequest;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
@@ -14,12 +15,18 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class NotificationProducer {
 
+    @Qualifier("paymentKafkaTemplate")
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    public void sendNotification(PaymentNotificationRequest paymentNotificationRequest) {
+    public void sendNotification(PaymentNotificationRequest paymentConfirmation) {
+
+        log.info("=== PAYMENT PRODUCER ===");
+        log.info("Sending to topic: payment-topic");
+        log.info("Message type: {}", paymentConfirmation.getClass().getName());
+        log.info("Payload: {}", paymentConfirmation);
 
         Message<PaymentNotificationRequest> message = MessageBuilder
-                .withPayload(paymentNotificationRequest)
+                .withPayload(paymentConfirmation)
                 .setHeader(KafkaHeaders.TOPIC, "payment-topic")
                 .build()
                 ;

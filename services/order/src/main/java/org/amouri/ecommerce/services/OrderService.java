@@ -43,8 +43,8 @@ public class OrderService {
                     new OrderLineRequest(
                             null,
                             order.getId(),
-                            purchaseRequest.productId(),
-                            purchaseRequest.quantity()
+                            purchaseRequest.id(),
+                            purchaseRequest.availableQuantity()
                     )
             );
 
@@ -56,7 +56,11 @@ public class OrderService {
                         request.paymentMethod(),
                         order.getId(),
                         order.getReference(),
-                        customer
+                        new CustomerPaymentRequest(
+                                customer.firstName(),
+                                customer.lastName(),
+                                customer.email()
+                        )
                 )
         );
 
@@ -82,11 +86,11 @@ public class OrderService {
     }
 
     public OrderResponse getById(Integer orderId) {
-        var order = getorderById(orderId);
+        var order = getOrderById(orderId);
         return mapper.toOrderResponse(order);
     }
 
-    private Order getorderById(Integer orderId) {
+    private Order getOrderById(Integer orderId) {
         return repository.findById(orderId)
                  .orElseThrow(
                         () -> new EntityNotFoundException("Cannot get order:: No order exists with ID: " + orderId)

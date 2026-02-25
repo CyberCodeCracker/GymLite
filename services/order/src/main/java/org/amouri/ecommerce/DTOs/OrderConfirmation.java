@@ -1,4 +1,5 @@
 package org.amouri.ecommerce.DTOs;
+
 import org.amouri.ecommerce.enums.PaymentMethod;
 
 import java.math.BigDecimal;
@@ -8,7 +9,7 @@ public record OrderConfirmation(
         String orderReference,
         BigDecimal totalAmount,
         PaymentMethod paymentMethod,
-        CustomerResponse customer,
+        Customer customer,
         List<PurchaseResponse> products
 ) {
 }

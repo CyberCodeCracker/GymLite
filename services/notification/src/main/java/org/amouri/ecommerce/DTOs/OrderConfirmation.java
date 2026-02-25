@@ -19,5 +19,5 @@ public class OrderConfirmation {
     private BigDecimal totalAmount;
     private PaymentMethod paymentMethod;
     private Customer customer;
-    private List<Product> product;
+    private List<Product> products;
 }

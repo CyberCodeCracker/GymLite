@@ -40,7 +40,7 @@ public class NotificationConsumer {
         emailService.sendPaymentSuccessEmail(
                 paymentConfirmation.getCustomerEmail(),
                 customerName,
-                paymentConfirmation.getAmount(),
+                paymentConfirmation.getTotalAmount(),
                 paymentConfirmation.getOrderReference()
         );
 
@@ -66,7 +66,7 @@ public class NotificationConsumer {
                 customerName,
                 orderConfirmation.getTotalAmount(),
                 orderConfirmation.getOrderReference(),
-                orderConfirmation.getProduct()
+                orderConfirmation.getProducts()
         );
 
     }

@@ -1,22 +1,17 @@
 spring:
   data:
     mongodb:
-      username: glite
-      password: GliteEcom$200
-      host: localhost
-      port: 27017
-      database: notification
-      authentication-database: admin
+      uri: mongodb://glite:GliteEcom200@localhost:27017/notification?authSource=admin
   kafka:
     consumer:
       bootstrap-servers: localhost:9092
-      group-id: paymentGroup, orderGroup
+      group-id: notification-group
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages: 'org.amouri.ecommerce.*' # allow deserialization of classes in this package only
-        spring.json.type.mapping: orderConfirmation:org.amouri.ecommerce.DTOs.OrderConfirmation,paymentNotificationRequest:org.amouri.ecommerce.DTOs.PaymentNotificationRequest
+        spring.json.trusted.packages: 'org.amouri.ecommerce.*'
+        spring.json.type.mapping: orderConfirmation:org.amouri.ecommerce.DTOs.OrderConfirmation,paymentConfirmation:org.amouri.ecommerce.DTOs.PaymentConfirmation  # ✅ Fixed
 
   mail:
     host: localhost
