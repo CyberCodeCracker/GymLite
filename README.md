@@ -56,8 +56,7 @@ ecommerce-microservices/
 ├── order-service/              # Order processing (PostgreSQL, port 8070)
 ├── payment-service/            # Payment processing (PostgreSQL, port 8060)
 ├── notification-service/       # Email notifications (MongoDB, port 8040)
-├── docker-compose.yml          # Kafka + Zookeeper + MongoDB + PostgreSQL + MailDev
-└── pom.xml                     # Parent POM
+└── docker-compose.yml          # Kafka + Zookeeper + MongoDB + PostgreSQL + MailDev
 ```
 
 ## Service Ports
@@ -86,8 +85,8 @@ ecommerce-microservices/
 ## Quick Start (Docker Compose)
 1. Clone the repository
 ```bash
-   git clone https://github.com/YOUR_USERNAME/ecommerce-microservices.git
-   cd ecommerce-microservices
+   git clone https://github.com/cybercodecracker.git
+   cd services
 ```
 
 2. Start infrastructure services
