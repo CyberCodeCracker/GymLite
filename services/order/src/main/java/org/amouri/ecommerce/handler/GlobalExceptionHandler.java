@@ -18,7 +18,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleCustomerNotFoundException(BusinessException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                . body(ex.getMessage())
+                .body(ex.getMessage())
                 ;
     }
 
@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleCustomerNotFoundException(EntityNotFoundException ex) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
-                . body(ex.getMessage())
+                .body(ex.getMessage())
                 ;
     }
 
