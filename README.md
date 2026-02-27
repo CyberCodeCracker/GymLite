@@ -1,4 +1,4 @@
-# GymLite 🏋️‍♂️
+# GymLite 
 
 **GymLite** is a modern e-commerce web application for purchasing gym equipment, supplements, apparel, and accessories.  
 It follows a **microservices architecture** for scalability, maintainability, and resilience, with secure authentication & authorization via **Keycloak**.
