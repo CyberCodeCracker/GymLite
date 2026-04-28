@@ -1,0 +1,118 @@
+﻿<section class="space-y-6">
+  <header class="app-panel p-5">
+    <h1 class="m-0 text-3xl font-black">Admin Products</h1>
+    <p class="mt-2 text-black/65">Manage product catalog content and inventory values.</p>
+  </header>
+
+  <div class="rounded-xl bg-red-100 px-4 py-3 text-sm font-semibold text-red-700" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+  <div class="rounded-xl bg-green-100 px-4 py-3 text-sm font-semibold text-green-800" *ngIf="successMessage">
+    {{ successMessage }}
+  </div>
+
+  <div class="grid gap-6 xl:grid-cols-2">
+    <article class="app-panel p-5">
+      <h2 class="m-0 text-xl font-black">Create Product</h2>
+      <form class="mt-4 grid gap-3" [formGroup]="createForm" (ngSubmit)="createProduct()">
+        <label>
+          <span class="field-label">Name</span>
+          <input class="text-field" formControlName="name" />
+        </label>
+        <label>
+          <span class="field-label">Description</span>
+          <textarea class="text-field" rows="3" formControlName="description"></textarea>
+        </label>
+
+        <div class="grid gap-3 sm:grid-cols-2">
+          <label>
+            <span class="field-label">Quantity</span>
+            <input type="number" class="text-field" formControlName="availableQuantity" />
+          </label>
+          <label>
+            <span class="field-label">Price</span>
+            <input type="number" class="text-field" formControlName="price" />
+          </label>
+        </div>
+
+        <label>
+          <span class="field-label">Category ID</span>
+          <input type="number" class="text-field" formControlName="categoryId" />
+        </label>
+
+        <label>
+          <span class="field-label">Product Images</span>
+          <input type="file" class="text-field" multiple (change)="onFilesSelected($event)" />
+        </label>
+
+        <button type="submit" class="btn-primary" [disabled]="creating">
+          {{ creating ? 'Creating...' : 'Create Product' }}
+        </button>
+      </form>
+    </article>
+
+    <article class="app-panel p-5">
+      <h2 class="m-0 text-xl font-black">Update Selected Product</h2>
+      <p class="mt-1 text-sm text-black/65" *ngIf="selectedProductId !== null; else noSelection">
+        Editing product #{{ selectedProductId }}
+      </p>
+      <ng-template #noSelection>
+        <p class="mt-1 text-sm text-black/65">Select a product below before updating.</p>
+      </ng-template>
+
+      <form class="mt-4 grid gap-3" [formGroup]="updateForm" (ngSubmit)="updateSelectedProduct()">
+        <label>
+          <span class="field-label">Name</span>
+          <input class="text-field" formControlName="name" />
+        </label>
+        <label>
+          <span class="field-label">Description</span>
+          <textarea class="text-field" rows="3" formControlName="description"></textarea>
+        </label>
+
+        <div class="grid gap-3 sm:grid-cols-2">
+          <label>
+            <span class="field-label">Quantity</span>
+            <input type="number" class="text-field" formControlName="availableQuantity" />
+          </label>
+          <label>
+            <span class="field-label">Price</span>
+            <input type="number" class="text-field" formControlName="price" />
+          </label>
+        </div>
+
+        <label>
+          <span class="field-label">Category ID</span>
+          <input type="number" class="text-field" formControlName="categoryId" />
+        </label>
+
+        <button type="submit" class="btn-primary" [disabled]="selectedProductId === null || updating">
+          {{ updating ? 'Updating...' : 'Update Product' }}
+        </button>
+      </form>
+    </article>
+  </div>
+
+  <article class="app-panel p-5">
+    <h2 class="m-0 text-xl font-black">Existing Products</h2>
+    <p class="mt-2 text-sm text-black/65" *ngIf="loading">Loading products...</p>
+
+    <div class="mt-4 grid gap-3" *ngIf="!loading">
+      <div class="product-row" *ngFor="let product of products">
+        <div>
+          <h3 class="m-0 text-base font-bold">{{ product.name }}</h3>
+          <p class="m-0 mt-1 text-sm text-black/65">
+            ID: {{ product.id }} | Category ID: {{ product.categoryId }} | Qty: {{ product.availableQuantity }} | Price:
+            {{ product.price | currency }}
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button type="button" class="btn-secondary" (click)="selectProductForUpdate(product)">Edit</button>
+          <button type="button" class="btn-secondary !border-red-400 !text-red-700" (click)="deleteProduct(product.id)">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </article>
+</section>

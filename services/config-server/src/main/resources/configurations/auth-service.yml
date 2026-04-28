@@ -1,0 +1,14 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://glite:GliteEcom200@localhost:27017/auth?authSource=admin
+  application:
+    security:
+      jwt:
+        access-expiration: 900000
+        refresh-expiration: 2592000000
+        private-key-path: services/auth/src/main/resources/keys/private.pem
+        public-key-path: services/auth/src/main/resources/keys/public.pem
+
+server:
+  port: 8095

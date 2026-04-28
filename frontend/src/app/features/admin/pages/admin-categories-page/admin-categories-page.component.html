@@ -1,0 +1,65 @@
+﻿<section class="space-y-6">
+  <header class="app-panel p-5">
+    <h1 class="m-0 text-3xl font-black">Admin Categories</h1>
+    <p class="mt-2 text-black/65">Create and delete product categories.</p>
+  </header>
+
+  <div class="rounded-xl bg-red-100 px-4 py-3 text-sm font-semibold text-red-700" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+  <div class="rounded-xl bg-green-100 px-4 py-3 text-sm font-semibold text-green-800" *ngIf="successMessage">
+    {{ successMessage }}
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    <article class="app-panel p-5">
+      <h2 class="m-0 text-xl font-black">Create Category</h2>
+      <form class="mt-4 grid gap-3" [formGroup]="createForm" (ngSubmit)="createCategory()">
+        <label>
+          <span class="field-label">Name</span>
+          <input class="text-field" formControlName="name" />
+        </label>
+        <label>
+          <span class="field-label">Description</span>
+          <textarea class="text-field" rows="3" formControlName="description"></textarea>
+        </label>
+        <button type="submit" class="btn-primary" [disabled]="creating">
+          {{ creating ? 'Creating...' : 'Create Category' }}
+        </button>
+      </form>
+    </article>
+
+    <article class="app-panel p-5">
+      <h2 class="m-0 text-xl font-black">Delete Category</h2>
+      <p class="mt-2 text-sm text-black/65">
+        Because the backend category response does not expose IDs, provide the numeric category ID manually.
+      </p>
+      <form class="mt-4 grid gap-3" [formGroup]="deleteForm" (ngSubmit)="deleteCategory()">
+        <label>
+          <span class="field-label">Category ID</span>
+          <input type="number" class="text-field" formControlName="categoryId" />
+        </label>
+        <button type="submit" class="btn-secondary !border-red-400 !text-red-700" [disabled]="deleting">
+          {{ deleting ? 'Deleting...' : 'Delete Category' }}
+        </button>
+      </form>
+    </article>
+  </div>
+
+  <article class="app-panel p-5">
+    <h2 class="m-0 text-xl font-black">Existing Categories</h2>
+    <p class="mt-2 text-sm text-black/65" *ngIf="loading">Loading categories...</p>
+
+    <div class="mt-4 grid gap-3" *ngIf="!loading">
+      <div class="category-row" *ngFor="let category of categories">
+        <div>
+          <h3 class="m-0 text-base font-bold">{{ category.name }}</h3>
+          <p class="m-0 mt-1 text-sm text-black/65">{{ category.description }}</p>
+        </div>
+        <span class="rounded-full bg-brand/20 px-2 py-1 text-xs font-semibold text-ink">
+          {{ category.products.length }} product(s)
+        </span>
+      </div>
+    </div>
+  </article>
+</section>

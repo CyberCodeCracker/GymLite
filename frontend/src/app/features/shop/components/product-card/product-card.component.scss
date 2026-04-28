@@ -1,0 +1,16 @@
+﻿.product-card {
+  @apply h-full rounded-2xl border border-black/10 bg-white/85 p-4 shadow-card backdrop-blur-sm transition hover:-translate-y-1;
+}
+
+.image-shell {
+  @apply h-44 overflow-hidden rounded-xl border border-black/10 bg-white;
+
+  img {
+    @apply h-full w-full object-cover;
+  }
+}
+
+.qty-btn {
+  @apply grid h-8 w-8 place-items-center rounded-lg border border-black/20 text-sm font-bold transition hover:border-brand;
+}
+
