@@ -31,7 +31,7 @@ public class CustomerService {
 
     public void updateCustomer(@Valid CustomerRequest request, int id) {
         var customer = repository.findById(request.id()).orElseThrow(
-                () -> new CustomerNotFoundException(format("Cannot update customer:: No customer found with the provided ID:: %d", request.id()))
+                () -> new CustomerNotFoundException(format("Cannot update customer:: No customer found with the provided ID:: %s", request.id()))
         );
         mapper.updateCustomerFromRequest(request, customer);
         repository.save(customer);
@@ -54,7 +54,7 @@ public class CustomerService {
         return repository.findById(id)
                 .map(mapper::toCustomerResponse)
                 .orElseThrow(
-                        () -> new CustomerNotFoundException(format("Cannot retrieve customer:: No customer found with the provided ID:: %d", id))
+                        () -> new CustomerNotFoundException(format("Cannot retrieve customer:: No customer found with the provided ID:: %s", id))
                 )
                 ;
     }

@@ -4,41 +4,70 @@
   </a>
   <h1 class="text-3xl font-black text-ink mb-8">Checkout</h1>
 
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-    <!-- Payment method -->
-    <div class="card">
-      <h2 class="text-lg font-bold text-ink mb-4">Payment Method</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <button *ngFor="let m of paymentMethods" (click)="paymentMethod = m"
-          class="flex items-center gap-3 rounded-lg border p-4 transition text-left"
-          [ngClass]="paymentMethod === m ? 'border-brand bg-brand/10' : 'border-white/10 hover:border-white/20'">
-          <i class="fa-solid text-lg" [ngClass]="{
-            'fa-cc-visa text-blue-400': m === 'VISA',
-            'fa-cc-mastercard text-orange-400': m === 'MASTER_CARD',
-            'fa-paypal text-blue-300': m === 'PAYPAL',
-            'fa-credit-card text-ink-muted': m === 'CREDIT_CARD',
-            'fa-bitcoin-sign text-yellow-400': m === 'BITCOIN'
-          }"></i>
-          <span class="text-sm font-medium text-ink">{{ formatMethod(m) }}</span>
-        </button>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Left column -->
+    <div class="lg:col-span-2 space-y-6">
+
+      <!-- Shipping address -->
+      <div class="card">
+        <h2 class="text-lg font-bold text-ink mb-4"><i class="fa-solid fa-location-dot text-brand mr-2"></i>Shipping Address</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="label">Street</label>
+            <input [(ngModel)]="address.street" class="input" placeholder="123 Main St" />
+          </div>
+          <div>
+            <label class="label">House / Apt Number</label>
+            <input [(ngModel)]="address.houseNumber" class="input" placeholder="Apt 4B" />
+          </div>
+          <div>
+            <label class="label">City</label>
+            <input [(ngModel)]="address.city" class="input" placeholder="New York" />
+          </div>
+          <div>
+            <label class="label">Zip Code</label>
+            <input [(ngModel)]="address.zipCode" class="input" placeholder="10001" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment method -->
+      <div class="card">
+        <h2 class="text-lg font-bold text-ink mb-4"><i class="fa-solid fa-wallet text-brand mr-2"></i>Payment Method</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button *ngFor="let m of paymentMethods" (click)="paymentMethod = m"
+            class="flex items-center gap-3 rounded-lg border p-4 transition text-left"
+            [ngClass]="paymentMethod === m ? 'border-brand bg-brand/10' : 'border-white/10 hover:border-white/20'">
+            <i class="text-xl" [ngClass]="{
+              'fa-brands fa-cc-visa text-blue-400': m === 'VISA',
+              'fa-brands fa-cc-mastercard text-orange-400': m === 'MASTER_CARD',
+              'fa-brands fa-cc-paypal text-blue-300': m === 'PAYPAL',
+              'fa-solid fa-credit-card text-emerald-400': m === 'CREDIT_CARD',
+              'fa-brands fa-bitcoin text-yellow-400': m === 'BITCOIN'
+            }"></i>
+            <span class="text-sm font-medium text-ink">{{ formatMethod(m) }}</span>
+          </button>
+        </div>
       </div>
     </div>
 
     <!-- Order summary -->
-    <div class="card h-fit">
-      <h2 class="text-lg font-bold text-ink mb-4">Order Summary</h2>
+    <div class="card h-fit sticky top-24">
+      <h2 class="text-lg font-bold text-ink mb-4"><i class="fa-solid fa-receipt text-brand mr-2"></i>Order Summary</h2>
       <div *ngFor="let item of cart$ | async" class="flex justify-between text-sm py-2 border-b border-white/5">
         <span class="text-ink-muted truncate mr-4">{{ item.name }} x{{ item.quantity }}</span>
         <span class="text-ink font-medium whitespace-nowrap">{{ item.price * item.quantity | currency }}</span>
       </div>
-      <div class="flex justify-between text-ink font-bold text-base mt-4">
+      <hr class="border-white/10 my-3" />
+      <div class="flex justify-between text-ink font-bold text-base">
         <span>Total</span>
         <span class="text-brand">{{ total$ | async | currency }}</span>
       </div>
-      <button (click)="placeOrder()" [disabled]="loading" class="btn-primary w-full mt-6">
-        <i *ngIf="loading" class="fa-solid fa-spinner fa-spin"></i>
+      <button (click)="placeOrder()" [disabled]="loading || !addressValid" class="btn-primary w-full mt-6">
+        <i *ngIf="loading" class="fa-solid fa-spinner fa-spin mr-1"></i>
         {{ loading ? 'Processing...' : 'Place Order' }}
       </button>
+      <p *ngIf="!addressValid" class="text-xs text-ink-faint text-center mt-2">Fill in your shipping address to continue</p>
     </div>
   </div>
 </section>

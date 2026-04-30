@@ -1,13 +1,13 @@
-<section class="min-h-[80vh] flex items-center justify-center px-4">
-  <div class="card w-full max-w-md p-8">
-    <div class="text-center mb-6">
-      <i class="fa-solid fa-dumbbell text-brand text-3xl mb-3"></i>
+<section class="flex items-center justify-center px-4 py-10">
+  <div class="card w-full max-w-md p-6">
+    <div class="text-center mb-4">
+      <i class="fa-solid fa-dumbbell text-brand text-2xl mb-2"></i>
       <h1 class="text-2xl font-black text-ink">Join GymLite</h1>
       <p class="text-sm text-ink-muted mt-1">Step {{ step }} of 2</p>
     </div>
 
     <!-- Progress bar -->
-    <div class="flex gap-2 mb-6">
+    <div class="flex gap-2 mb-4">
       <div class="h-1 flex-1 rounded-full" [ngClass]="step >= 1 ? 'bg-brand' : 'bg-white/10'"></div>
       <div class="h-1 flex-1 rounded-full" [ngClass]="step >= 2 ? 'bg-brand' : 'bg-white/10'"></div>
     </div>
@@ -62,7 +62,7 @@
       </div>
     </div>
 
-    <p class="text-center text-sm text-ink-muted mt-5">
+    <p class="text-center text-sm text-ink-muted mt-3">
       Already have an account? <a routerLink="/login" class="text-brand hover:underline font-medium">Sign In</a>
     </p>
   </div>
