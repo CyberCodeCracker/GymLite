@@ -36,7 +36,7 @@ public class AuthController {
     public ResponseEntity<AuthenticationResponse> refreshToken(
             @RequestBody @Valid RefreshTokenRequest request
     ) {
-        return ResponseEntity.ok(authService.refreshToken(request.getRefreshToken()));
+        return ResponseEntity.ok(authService.refreshToken(request.refreshToken()));
     }
 
     @ExceptionHandler(IllegalStateException.class)

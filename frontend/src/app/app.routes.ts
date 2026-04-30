@@ -1,83 +1,28 @@
-﻿import { Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
+  { path: '', loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent) },
+  { path: 'login', loadComponent: () => import('./features/auth/login/login.component').then(m => m.LoginComponent) },
+  { path: 'register', loadComponent: () => import('./features/auth/register/register.component').then(m => m.RegisterComponent) },
+  { path: 'products', loadComponent: () => import('./features/products/product-list/product-list.component').then(m => m.ProductListComponent) },
+  { path: 'products/:id', loadComponent: () => import('./features/products/product-detail/product-detail.component').then(m => m.ProductDetailComponent) },
+  { path: 'cart', loadComponent: () => import('./features/cart/cart.component').then(m => m.CartComponent) },
   {
-    path: '',
-    pathMatch: 'full',
-    redirectTo: 'products'
+    path: 'checkout', canActivate: [authGuard],
+    loadComponent: () => import('./features/checkout/checkout.component').then(m => m.CheckoutComponent)
   },
   {
-    path: 'login',
-    loadComponent: () =>
-      import('./features/auth/pages/login-page/login-page.component').then(
-        (m) => m.LoginPageComponent
-      )
+    path: 'admin',
+    canActivate: [roleGuard], data: { roles: ['ADMIN'] },
+    loadComponent: () => import('./features/admin/admin-layout/admin-layout.component').then(m => m.AdminLayoutComponent),
+    children: [
+      { path: '', redirectTo: 'products', pathMatch: 'full' },
+      { path: 'products', loadComponent: () => import('./features/admin/admin-products/admin-products.component').then(m => m.AdminProductsComponent) },
+      { path: 'categories', loadComponent: () => import('./features/admin/admin-categories/admin-categories.component').then(m => m.AdminCategoriesComponent) },
+      { path: 'orders', loadComponent: () => import('./features/admin/admin-orders/admin-orders.component').then(m => m.AdminOrdersComponent) }
+    ]
   },
-  {
-    path: 'register',
-    loadComponent: () =>
-      import('./features/auth/pages/register-page/register-page.component').then(
-        (m) => m.RegisterPageComponent
-      )
-  },
-  {
-    path: 'products',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/shop/pages/products-page/products-page.component').then(
-        (m) => m.ProductsPageComponent
-      )
-  },
-  {
-    path: 'checkout',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/checkout/pages/checkout-page/checkout-page.component').then(
-        (m) => m.CheckoutPageComponent
-      )
-  },
-  {
-    path: 'orders',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/orders/pages/orders-page/orders-page.component').then(
-        (m) => m.OrdersPageComponent
-      )
-  },
-  {
-    path: 'profile',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/profile/pages/profile-page/profile-page.component').then(
-        (m) => m.ProfilePageComponent
-      )
-  },
-  {
-    path: 'admin/products',
-    canActivate: [authGuard, roleGuard],
-    data: {
-      roles: ['admin', 'ROLE_ADMIN']
-    },
-    loadComponent: () =>
-      import('./features/admin/pages/admin-products-page/admin-products-page.component').then(
-        (m) => m.AdminProductsPageComponent
-      )
-  },
-  {
-    path: 'admin/categories',
-    canActivate: [authGuard, roleGuard],
-    data: {
-      roles: ['admin', 'ROLE_ADMIN']
-    },
-    loadComponent: () =>
-      import('./features/admin/pages/admin-categories-page/admin-categories-page.component').then(
-        (m) => m.AdminCategoriesPageComponent
-      )
-  },
-  {
-    path: '**',
-    redirectTo: 'products'
-  }
+  { path: '**', redirectTo: '' }
 ];

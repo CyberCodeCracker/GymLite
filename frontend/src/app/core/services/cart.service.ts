@@ -1,85 +1,42 @@
-﻿import { Injectable } from '@angular/core';
-import { BehaviorSubject, map } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { CartItem } from '../models/cart.model';
-import { Product } from '../models/product.model';
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
-  private readonly storageKey = 'gymlite_cart';
-  private readonly itemsSubject = new BehaviorSubject<CartItem[]>(this.readInitialState());
+  private readonly KEY = 'gl_cart';
+  private items$ = new BehaviorSubject<CartItem[]>(this.load());
+  readonly cart$ = this.items$.asObservable();
+  readonly itemCount$ = this.cart$.pipe(map(items => items.reduce((s, i) => s + i.quantity, 0)));
+  readonly total$ = this.cart$.pipe(map(items => items.reduce((s, i) => s + i.price * i.quantity, 0)));
 
-  readonly items$ = this.itemsSubject.asObservable();
-  readonly itemCount$ = this.items$.pipe(
-    map((items) => items.reduce((total, item) => total + item.quantity, 0))
-  );
-  readonly totalAmount$ = this.items$.pipe(
-    map((items) =>
-      items.reduce((total, item) => total + item.product.price * item.quantity, 0)
-    )
-  );
-
-  getSnapshot(): CartItem[] {
-    return this.itemsSubject.value;
+  add(item: CartItem): void {
+    const items = [...this.items$.value];
+    const idx = items.findIndex(i => i.productId === item.productId);
+    if (idx >= 0) items[idx] = { ...items[idx], quantity: items[idx].quantity + item.quantity };
+    else items.push({ ...item });
+    this.save(items);
   }
 
-  addItem(product: Product, quantity = 1): void {
-    if (quantity <= 0) {
-      return;
-    }
-
-    const currentItems = [...this.itemsSubject.value];
-    const existingIndex = currentItems.findIndex((item) => item.product.id === product.id);
-
-    if (existingIndex >= 0) {
-      currentItems[existingIndex] = {
-        ...currentItems[existingIndex],
-        quantity: currentItems[existingIndex].quantity + quantity
-      };
-    } else {
-      currentItems.push({ product, quantity });
-    }
-
-    this.updateState(currentItems);
+  updateQty(productId: number, qty: number): void {
+    const items = this.items$.value.map(i => i.productId === productId ? { ...i, quantity: Math.max(1, qty) } : i);
+    this.save(items);
   }
 
-  updateQuantity(productId: number, quantity: number): void {
-    if (quantity <= 0) {
-      this.removeItem(productId);
-      return;
-    }
-
-    const nextItems = this.itemsSubject.value.map((item) =>
-      item.product.id === productId ? { ...item, quantity } : item
-    );
-
-    this.updateState(nextItems);
+  remove(productId: number): void {
+    this.save(this.items$.value.filter(i => i.productId !== productId));
   }
 
-  removeItem(productId: number): void {
-    const nextItems = this.itemsSubject.value.filter((item) => item.product.id !== productId);
-    this.updateState(nextItems);
+  clear(): void { this.save([]); }
+  getItems(): CartItem[] { return this.items$.value; }
+
+  private save(items: CartItem[]): void {
+    localStorage.setItem(this.KEY, JSON.stringify(items));
+    this.items$.next(items);
   }
-
-  clear(): void {
-    this.updateState([]);
-  }
-
-  private updateState(items: CartItem[]): void {
-    this.itemsSubject.next(items);
-    localStorage.setItem(this.storageKey, JSON.stringify(items));
-  }
-
-  private readInitialState(): CartItem[] {
-    const rawState = localStorage.getItem(this.storageKey);
-    if (!rawState) {
-      return [];
-    }
-
-    try {
-      const parsed = JSON.parse(rawState) as CartItem[];
-      return Array.isArray(parsed) ? parsed : [];
-    } catch {
-      return [];
-    }
+  private load(): CartItem[] {
+    try { return JSON.parse(localStorage.getItem(this.KEY) ?? '[]'); }
+    catch { return []; }
   }
 }

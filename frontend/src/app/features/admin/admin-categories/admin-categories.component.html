@@ -1,0 +1,45 @@
+<div>
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-xl font-bold text-ink">Categories</h2>
+    <button (click)="openCreate()" class="btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Add Category</button>
+  </div>
+
+  <div *ngIf="showForm" class="card mb-6">
+    <h3 class="text-lg font-bold text-ink mb-4">{{ editId ? 'Edit' : 'New' }} Category</h3>
+    <div class="space-y-4">
+      <div>
+        <label class="label">Name</label>
+        <input [(ngModel)]="form.name" class="input" placeholder="Category name" />
+      </div>
+      <div>
+        <label class="label">Description</label>
+        <textarea [(ngModel)]="form.description" class="input" rows="3" placeholder="Description..."></textarea>
+      </div>
+    </div>
+    <div class="flex gap-3 mt-4">
+      <button (click)="save()" [disabled]="loading" class="btn-primary btn-sm">
+        <i *ngIf="loading" class="fa-solid fa-spinner fa-spin"></i> {{ editId ? 'Update' : 'Create' }}
+      </button>
+      <button (click)="cancel()" class="btn-secondary btn-sm">Cancel</button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div *ngFor="let c of categories" class="card flex items-start justify-between">
+      <div class="min-w-0">
+        <h3 class="font-semibold text-ink">{{ c.name }}</h3>
+        <p class="text-sm text-ink-muted mt-1 line-clamp-2">{{ c.description }}</p>
+        <span class="badge-brand mt-2">{{ c.products?.length || 0 }} products</span>
+      </div>
+      <div class="flex gap-1 ml-3 flex-shrink-0">
+        <button (click)="openEdit(c)" class="btn-ghost btn-sm"><i class="fa-solid fa-pen"></i></button>
+        <button (click)="deleteCategory(c.id!)" class="btn-ghost btn-sm text-red-400"><i class="fa-solid fa-trash"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!categories.length" class="text-center py-12 text-ink-muted">
+    <i class="fa-solid fa-tags text-4xl mb-3"></i>
+    <p>No categories yet</p>
+  </div>
+</div>

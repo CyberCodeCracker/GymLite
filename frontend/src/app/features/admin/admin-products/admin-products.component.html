@@ -1,0 +1,77 @@
+<div>
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-xl font-bold text-ink">Products</h2>
+    <button (click)="openCreate()" class="btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Add Product</button>
+  </div>
+
+  <!-- Form modal -->
+  <div *ngIf="showForm" class="card mb-6">
+    <h3 class="text-lg font-bold text-ink mb-4">{{ editId ? 'Edit' : 'New' }} Product</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="label">Name</label>
+        <input [(ngModel)]="form.name" class="input" placeholder="Product name" />
+      </div>
+      <div>
+        <label class="label">Category</label>
+        <select [(ngModel)]="form.categoryId" class="input">
+          <option [ngValue]="0" disabled>Select category</option>
+          <option *ngFor="let c of categories" [ngValue]="c.id">{{ c.name }}</option>
+        </select>
+      </div>
+      <div>
+        <label class="label">Price</label>
+        <input type="number" [(ngModel)]="form.price" class="input" placeholder="0.00" />
+      </div>
+      <div>
+        <label class="label">Quantity</label>
+        <input type="number" [(ngModel)]="form.availableQuantity" class="input" placeholder="0" />
+      </div>
+      <div class="sm:col-span-2">
+        <label class="label">Description</label>
+        <textarea [(ngModel)]="form.description" class="input" rows="3" placeholder="Description..."></textarea>
+      </div>
+      <div *ngIf="!editId" class="sm:col-span-2">
+        <label class="label">Images</label>
+        <input type="file" (change)="onFiles($event)" multiple accept="image/*" class="input text-sm file:mr-3 file:rounded-md file:border-0 file:bg-brand/20 file:px-3 file:py-1 file:text-sm file:text-brand-light" />
+      </div>
+    </div>
+    <div class="flex gap-3 mt-4">
+      <button (click)="save()" [disabled]="loading" class="btn-primary btn-sm">
+        <i *ngIf="loading" class="fa-solid fa-spinner fa-spin"></i> {{ editId ? 'Update' : 'Create' }}
+      </button>
+      <button (click)="cancel()" class="btn-secondary btn-sm">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-white/10 text-left text-ink-muted">
+          <th class="pb-3 font-medium">Product</th>
+          <th class="pb-3 font-medium hidden sm:table-cell">Category</th>
+          <th class="pb-3 font-medium">Price</th>
+          <th class="pb-3 font-medium hidden md:table-cell">Stock</th>
+          <th class="pb-3 font-medium text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of paged" class="border-b border-white/5 hover:bg-white/[0.02]">
+          <td class="py-3 font-medium text-ink">{{ p.name }}</td>
+          <td class="py-3 text-ink-muted hidden sm:table-cell">{{ p.categoryName }}</td>
+          <td class="py-3 text-brand font-medium">{{ p.price | currency }}</td>
+          <td class="py-3 hidden md:table-cell">
+            <span [ngClass]="p.availableQuantity > 0 ? 'badge-green' : 'badge bg-red-500/20 text-red-400'">{{ p.availableQuantity }}</span>
+          </td>
+          <td class="py-3 text-right">
+            <button (click)="openEdit(p)" class="btn-ghost btn-sm"><i class="fa-solid fa-pen"></i></button>
+            <button (click)="deleteProduct(p.id)" class="btn-ghost btn-sm text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <app-pagination [currentPage]="page" [totalItems]="products.length" [pageSize]="pageSize" (pageChange)="page = $event"></app-pagination>
+</div>

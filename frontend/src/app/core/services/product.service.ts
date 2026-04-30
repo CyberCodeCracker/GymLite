@@ -1,49 +1,37 @@
-﻿import { Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import {
-  Product,
-  ProductPurchasedRequest,
-  ProductPurchasedResponse,
-  ProductRequest,
-  ProductUpdateRequest
-} from '../models/product.model';
+import { Product, ProductRequest, UpdateProductRequest } from '../models/product.model';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
-  private readonly baseUrl = environment.services.product;
+  private readonly API = environment.services.product;
+  constructor(private http: HttpClient) {}
 
-  constructor(private readonly http: HttpClient) {}
+  findAll(): Observable<Product[]> { return this.http.get<Product[]>(this.API); }
+  findById(id: number): Observable<Product> { return this.http.get<Product>(`${this.API}/${id}`); }
 
-  getAll(): Observable<Product[]> {
-    return this.http.get<Product[]>(this.baseUrl);
+  create(product: ProductRequest, files: File[]): Observable<number> {
+    const fd = new FormData();
+    fd.append('product', new Blob([JSON.stringify(product)], { type: 'application/json' }));
+    files.forEach(f => fd.append('files', f));
+    return this.http.post<number>(`${this.API}/create-product`, fd);
   }
 
-  getById(productId: number): Observable<Product> {
-    return this.http.get<Product>(`${this.baseUrl}/${productId}`);
+  update(id: number, req: UpdateProductRequest): Observable<Product> {
+    return this.http.patch<Product>(`${this.API}/${id}`, req);
   }
 
-  createProduct(product: ProductRequest, files: File[]): Observable<number> {
-    const formData = new FormData();
-    formData.append('product', new Blob([JSON.stringify(product)], { type: 'application/json' }));
+  delete(id: number): Observable<void> { return this.http.delete<void>(`${this.API}/${id}`); }
 
-    files.forEach((file) => {
-      formData.append('files', file, file.name);
-    });
-
-    return this.http.post<number>(`${this.baseUrl}/create-product`, formData);
+  addImages(id: number, files: File[]): Observable<void> {
+    const fd = new FormData();
+    files.forEach(f => fd.append('files', f));
+    return this.http.post<void>(`${this.API}/${id}/images`, fd);
   }
 
-  updateProduct(productId: number, payload: ProductUpdateRequest): Observable<Product> {
-    return this.http.patch<Product>(`${this.baseUrl}/${productId}`, payload);
-  }
-
-  deleteProduct(productId: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${productId}`);
-  }
-
-  purchaseProducts(payload: ProductPurchasedRequest[]): Observable<ProductPurchasedResponse[]> {
-    return this.http.post<ProductPurchasedResponse[]>(`${this.baseUrl}/purchase`, payload);
+  deleteImage(productId: number, imageId: number): Observable<void> {
+    return this.http.delete<void>(`${this.API}/${productId}/images/${imageId}`);
   }
 }

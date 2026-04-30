@@ -1,5 +1,6 @@
 export const environment = {
   production: false,
+  apiGateway: 'http://localhost:8222',
   services: {
     auth: 'http://localhost:8222/api/auth',
     product: 'http://localhost:8222/api/product',
@@ -10,7 +11,7 @@ export const environment = {
     payment: 'http://localhost:8222/api/payment'
   },
   roles: {
-    admin: ['admin', 'role_admin', 'ADMIN'],
-    customer: ['user', 'role_user', 'customer', 'role_customer', 'CUSTOMER']
+    admin: ['ADMIN'],
+    customer: ['CUSTOMER']
   }
 } as const;

@@ -3,182 +3,101 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { AuthState, AuthUser } from '../models/auth.model';
-
-interface AuthResponse {
-  accessToken: string;
-  refreshToken: string;
-}
-
-interface JwtPayload {
-  sub: string;
-  role?: string;
-  fullName?: string;
-  userId?: string;
-  exp: number;
-  iat: number;
-}
+import { AuthState, AuthUser, AuthResponse, JwtPayload } from '../models/auth.model';
 
 @Injectable({ providedIn: 'root' })
 export class TokenService {
-  private readonly AUTH_API = environment.services.auth;
-  private readonly ACCESS_TOKEN_KEY = 'gymlite_access_token';
-  private readonly REFRESH_TOKEN_KEY = 'gymlite_refresh_token';
+  private readonly API = environment.services.auth;
+  private readonly ACCESS_KEY = 'gl_access';
+  private readonly REFRESH_KEY = 'gl_refresh';
+  private refreshTimer: ReturnType<typeof setInterval> | null = null;
 
-  private readonly authStateSubject = new BehaviorSubject<AuthState>({
-    authenticated: false,
-    user: null
-  });
+  private state$ = new BehaviorSubject<AuthState>({ authenticated: false, user: null });
+  readonly authState$ = this.state$.asObservable();
 
-  readonly authState$ = this.authStateSubject.asObservable();
-
-  private refreshTimerId: ReturnType<typeof setInterval> | null = null;
-
-  constructor(private readonly http: HttpClient) {
-    this.restoreSession();
-  }
+  constructor(private http: HttpClient) { this.restore(); }
 
   login(email: string, password: string): Observable<boolean> {
-    return this.http
-      .post<AuthResponse>(`${this.AUTH_API}/authenticate`, { email, password })
-      .pipe(
-        tap((res) => this.handleAuthResponse(res)),
-        map(() => true),
-        catchError(() => of(false))
-      );
+    return this.http.post<AuthResponse>(`${this.API}/authenticate`, { email, password }).pipe(
+      tap(r => this.handleAuth(r)), map(() => true),
+      catchError(() => of(false))
+    );
   }
 
-  register(
-    firstName: string,
-    lastName: string,
-    email: string,
-    password: string,
-    passwordConfirm: string
-  ): Observable<boolean> {
-    return this.http
-      .post<AuthResponse>(`${this.AUTH_API}/register`, {
-        firstName,
-        lastName,
-        email,
-        password,
-        passwordConfirm
-      })
-      .pipe(
-        tap((res) => this.handleAuthResponse(res)),
-        map(() => true),
-        catchError(() => of(false))
-      );
+  register(firstName: string, lastName: string, email: string, password: string, passwordConfirm: string): Observable<boolean> {
+    return this.http.post<AuthResponse>(`${this.API}/register`, { firstName, lastName, email, password, passwordConfirm }).pipe(
+      tap(r => this.handleAuth(r)), map(() => true),
+      catchError(() => of(false))
+    );
   }
 
   logout(): void {
-    this.stopTokenRefresh();
-    localStorage.removeItem(this.ACCESS_TOKEN_KEY);
-    localStorage.removeItem(this.REFRESH_TOKEN_KEY);
-    this.authStateSubject.next({ authenticated: false, user: null });
+    this.stopRefresh();
+    localStorage.removeItem(this.ACCESS_KEY);
+    localStorage.removeItem(this.REFRESH_KEY);
+    this.state$.next({ authenticated: false, user: null });
   }
 
   getAccessToken(): string | null {
-    const token = localStorage.getItem(this.ACCESS_TOKEN_KEY);
-    if (!token) return null;
-
-    if (this.isTokenExpired(token)) {
-      return null;
-    }
-    return token;
+    const t = localStorage.getItem(this.ACCESS_KEY);
+    return t && !this.expired(t) ? t : null;
   }
 
-  isAuthenticated(): boolean {
-    return this.authStateSubject.value.authenticated;
+  isAuthenticated(): boolean { return this.state$.value.authenticated; }
+  getState(): AuthState { return this.state$.value; }
+
+  refresh(): Observable<boolean> {
+    const rt = localStorage.getItem(this.REFRESH_KEY);
+    if (!rt) return of(false);
+    return this.http.post<AuthResponse>(`${this.API}/refresh-token`, { refreshToken: rt }).pipe(
+      tap(r => this.handleAuth(r)), map(() => true),
+      catchError(() => { this.logout(); return of(false); })
+    );
   }
 
-  getCurrentState(): AuthState {
-    return this.authStateSubject.value;
+  private handleAuth(r: AuthResponse): void {
+    localStorage.setItem(this.ACCESS_KEY, r.accessToken);
+    localStorage.setItem(this.REFRESH_KEY, r.refreshToken);
+    this.state$.next({ authenticated: true, user: this.decode(r.accessToken) });
+    this.startRefresh();
   }
 
-  refreshAccessToken(): Observable<boolean> {
-    const refreshToken = localStorage.getItem(this.REFRESH_TOKEN_KEY);
-    if (!refreshToken) return of(false);
-
-    return this.http
-      .post<AuthResponse>(`${this.AUTH_API}/refresh-token`, { refreshToken })
-      .pipe(
-        tap((res) => this.handleAuthResponse(res)),
-        map(() => true),
-        catchError(() => {
-          this.logout();
-          return of(false);
-        })
-      );
-  }
-
-  private handleAuthResponse(res: AuthResponse): void {
-    localStorage.setItem(this.ACCESS_TOKEN_KEY, res.accessToken);
-    localStorage.setItem(this.REFRESH_TOKEN_KEY, res.refreshToken);
-    const user = this.decodeToken(res.accessToken);
-    this.authStateSubject.next({ authenticated: true, user });
-    this.startTokenRefresh();
-  }
-
-  private restoreSession(): void {
-    const token = localStorage.getItem(this.ACCESS_TOKEN_KEY);
-    if (!token) return;
-
-    if (this.isTokenExpired(token)) {
-      const refreshToken = localStorage.getItem(this.REFRESH_TOKEN_KEY);
-      if (refreshToken && !this.isTokenExpired(refreshToken)) {
-        this.refreshAccessToken().subscribe();
-      } else {
-        this.logout();
-      }
+  private restore(): void {
+    const t = localStorage.getItem(this.ACCESS_KEY);
+    if (!t) return;
+    if (this.expired(t)) {
+      const rt = localStorage.getItem(this.REFRESH_KEY);
+      if (rt && !this.expired(rt)) { this.refresh().subscribe(); }
+      else { this.logout(); }
       return;
     }
-
-    const user = this.decodeToken(token);
-    this.authStateSubject.next({ authenticated: true, user });
-    this.startTokenRefresh();
+    this.state$.next({ authenticated: true, user: this.decode(t) });
+    this.startRefresh();
   }
 
-  private startTokenRefresh(): void {
-    this.stopTokenRefresh();
-    // Refresh the token every 13 minutes (access token expires in 15 min)
-    this.refreshTimerId = setInterval(() => {
-      this.refreshAccessToken().subscribe();
-    }, 13 * 60 * 1000);
+  private startRefresh(): void {
+    this.stopRefresh();
+    this.refreshTimer = setInterval(() => this.refresh().subscribe(), 13 * 60 * 1000);
+  }
+  private stopRefresh(): void {
+    if (this.refreshTimer) { clearInterval(this.refreshTimer); this.refreshTimer = null; }
   }
 
-  private stopTokenRefresh(): void {
-    if (this.refreshTimerId !== null) {
-      clearInterval(this.refreshTimerId);
-      this.refreshTimerId = null;
-    }
-  }
-
-  private decodeToken(token: string): AuthUser {
+  private decode(token: string): AuthUser {
     try {
-      const payload = JSON.parse(atob(token.split('.')[1])) as JwtPayload;
-      const fullName = (payload.fullName ?? '').split(' ');
-      const role = (payload.role ?? '').replace(/^ROLE_/i, '');
-      const roles = role ? [role] : [];
-
+      const p = JSON.parse(atob(token.split('.')[1])) as JwtPayload;
+      const names = (p.fullName ?? '').split(' ');
+      const role = (p.role ?? '').replace(/^ROLE_/i, '');
       return {
-        id: payload.userId ?? payload.sub,
-        username: payload.sub,
-        email: payload.sub,
-        firstName: fullName[0] ?? '',
-        lastName: fullName.slice(1).join(' ') ?? '',
-        roles
+        id: p.userId ?? p.sub, username: p.sub, email: p.sub,
+        firstName: names[0] ?? '', lastName: names.slice(1).join(' '),
+        roles: role ? [role] : []
       };
-    } catch {
-      return { id: '', username: '', email: '', firstName: '', lastName: '', roles: [] };
-    }
+    } catch { return { id: '', username: '', email: '', firstName: '', lastName: '', roles: [] }; }
   }
 
-  private isTokenExpired(token: string): boolean {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1])) as JwtPayload;
-      return Date.now() >= payload.exp * 1000;
-    } catch {
-      return true;
-    }
+  private expired(token: string): boolean {
+    try { return Date.now() >= (JSON.parse(atob(token.split('.')[1])) as JwtPayload).exp * 1000; }
+    catch { return true; }
   }
 }

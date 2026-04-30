@@ -1,6 +1,7 @@
-﻿import { Product, ProductRequest } from './product.model';
+import { Product } from './product.model';
 
-export interface CategoryResponse {
+export interface Category {
+  id?: number;
   name: string;
   description: string;
   products: Product[];
@@ -9,14 +10,4 @@ export interface CategoryResponse {
 export interface CategoryRequest {
   name: string;
   description: string;
-}
-
-export interface CategoryUpdateRequest {
-  name?: string;
-  description?: string;
-}
-
-export interface AddProductToCategoryRequest {
-  request: ProductRequest;
-  categoryId: number;
 }

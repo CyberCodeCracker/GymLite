@@ -1,0 +1,29 @@
+<div class="container-app py-8">
+  <div class="flex items-center gap-3 mb-8">
+    <i class="fa-solid fa-shield-halved text-brand text-2xl"></i>
+    <h1 class="text-2xl font-black text-ink">Admin Panel</h1>
+  </div>
+
+  <div class="flex flex-col md:flex-row gap-6">
+    <!-- Sidebar -->
+    <nav class="flex md:flex-col gap-2 md:w-48 flex-shrink-0">
+      <a routerLink="/admin/products" routerLinkActive="bg-brand/10 text-brand border-brand"
+        class="flex items-center gap-2 rounded-lg border border-white/10 px-4 py-2.5 text-sm font-medium text-ink-muted hover:text-ink hover:border-white/20 transition">
+        <i class="fa-solid fa-box"></i> Products
+      </a>
+      <a routerLink="/admin/categories" routerLinkActive="bg-brand/10 text-brand border-brand"
+        class="flex items-center gap-2 rounded-lg border border-white/10 px-4 py-2.5 text-sm font-medium text-ink-muted hover:text-ink hover:border-white/20 transition">
+        <i class="fa-solid fa-tags"></i> Categories
+      </a>
+      <a routerLink="/admin/orders" routerLinkActive="bg-brand/10 text-brand border-brand"
+        class="flex items-center gap-2 rounded-lg border border-white/10 px-4 py-2.5 text-sm font-medium text-ink-muted hover:text-ink hover:border-white/20 transition">
+        <i class="fa-solid fa-receipt"></i> Orders
+      </a>
+    </nav>
+
+    <!-- Content -->
+    <div class="flex-1 min-w-0">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

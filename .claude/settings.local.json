@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker exec ms_pg_sql *)",
+      "Bash(./mvnw spring-boot:run)",
+      "Bash(echo \"Discovery server PID: $!\")",
+      "Read(//tmp/**)",
+      "Bash(netstat -ano)",
+      "Bash(tasklist /FI \"PID eq 7816\")",
+      "Bash(tasklist /FI \"PID eq 25092\")",
+      "PowerShell(Get-Process *)",
+      "PowerShell(Get-NetTCPConnection *)",
+      "Bash(psql -U postgres -h localhost -p 5432 -c \"\\\\l\")",
+      "Bash(psql *)",
+      "Bash(docker port ms_pg_sql *)",
+      "PowerShell(Get-CimInstance *)",
+      "Bash(wmic process *)",
+      "Bash(curl -s http://localhost:8888/order-service/default)",
+      "Bash(python -m json.tool)",
+      "Bash(curl -s http://localhost:8888/product-service/default)",
+      "Bash(echo \"PID: $!\")",
+      "Bash(wsl *)"
+    ]
+  }
+}

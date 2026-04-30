@@ -29,19 +29,18 @@ public class AuthService {
     private final UserDetailsService userDetailsService;
 
     public AuthenticationResponse register(RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalStateException("User with email " + request.getEmail() + " already exists");
+        if (userRepository.existsByEmail(request.email())) {
+            throw new IllegalStateException("User with email " + request.email() + " already exists");
         }
-
-        if (!request.getPassword().equals(request.getPasswordConfirm())) {
+        if (!request.password().equals(request.passwordConfirm())) {
             throw new IllegalArgumentException("Passwords do not match");
         }
 
         User user = User.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
+                .firstName(request.firstName())
+                .lastName(request.lastName())
+                .email(request.email())
+                .password(passwordEncoder.encode(request.password()))
                 .roles(List.of("CUSTOMER"))
                 .accountEnabled(true)
                 .accountLocked(false)
@@ -49,62 +48,29 @@ public class AuthService {
                 .build();
 
         userRepository.save(user);
-
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("role", "ROLE_CUSTOMER");
-        claims.put("fullName", user.getFullName());
-        claims.put("userId", user.getId());
-
-        String accessToken = jwtService.generateAccessToken(claims, user);
-        String refreshToken = jwtService.generateRefreshToken(user);
-
-        return AuthenticationResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
+        return buildResponse(user);
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         var auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
+                new UsernamePasswordAuthenticationToken(request.email(), request.password())
         );
-
-        User user = (User) auth.getPrincipal();
-
-        Map<String, Object> claims = new HashMap<>();
-        String role = user.getRoles().stream()
-                .findFirst()
-                .map(r -> "ROLE_" + r.toUpperCase())
-                .orElse("ROLE_CUSTOMER");
-        claims.put("role", role);
-        claims.put("fullName", user.getFullName());
-        claims.put("userId", user.getId());
-
-        String accessToken = jwtService.generateAccessToken(claims, user);
-        String refreshToken = jwtService.generateRefreshToken(user);
-
-        return AuthenticationResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
+        return buildResponse((User) auth.getPrincipal());
     }
 
     public AuthenticationResponse refreshToken(String refreshToken) {
         if (refreshToken == null || refreshToken.isBlank()) {
             throw new IllegalArgumentException("Refresh token is missing");
         }
-
         String userEmail = jwtService.extractUsername(refreshToken);
         UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
-
         if (!jwtService.isTokenValid(refreshToken, userDetails)) {
             throw new SecurityException("Invalid refresh token");
         }
+        return buildResponse((User) userDetails);
+    }
 
-        User user = (User) userDetails;
+    private AuthenticationResponse buildResponse(User user) {
         Map<String, Object> claims = new HashMap<>();
         String role = user.getRoles().stream()
                 .findFirst()
@@ -112,14 +78,11 @@ public class AuthService {
                 .orElse("ROLE_CUSTOMER");
         claims.put("role", role);
         claims.put("fullName", user.getFullName());
-        claims.put("userId", user.getId());
+        claims.put("userId", user.getId().toString());
 
-        String newAccessToken = jwtService.generateAccessToken(claims, user);
-        String newRefreshToken = jwtService.generateRefreshToken(user);
-
-        return AuthenticationResponse.builder()
-                .accessToken(newAccessToken)
-                .refreshToken(newRefreshToken)
-                .build();
+        return new AuthenticationResponse(
+                jwtService.generateAccessToken(claims, user),
+                jwtService.generateRefreshToken(user)
+        );
     }
 }

@@ -1,8 +1,8 @@
-﻿<div class="min-h-screen">
-  <app-navbar (cartToggle)="toggleCart()"></app-navbar>
-  <app-cart-panel [open]="isCartOpen" (closePanel)="closeCart()"></app-cart-panel>
-
-  <main class="mx-auto w-full max-w-7xl px-4 pb-8 pt-6 sm:px-6 lg:px-8">
+<app-toast></app-toast>
+<div class="flex min-h-screen flex-col">
+  <app-navbar></app-navbar>
+  <main class="flex-1">
     <router-outlet></router-outlet>
   </main>
+  <app-footer></app-footer>
 </div>

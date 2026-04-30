@@ -1,4 +1,4 @@
-﻿export interface AuthUser {
+export interface AuthUser {
   id: string;
   username: string;
   email: string;
@@ -10,4 +10,18 @@
 export interface AuthState {
   authenticated: boolean;
   user: AuthUser | null;
+}
+
+export interface AuthResponse {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface JwtPayload {
+  sub: string;
+  role?: string;
+  fullName?: string;
+  userId?: string;
+  exp: number;
+  iat: number;
 }

@@ -1,4 +1,4 @@
-﻿export interface Product {
+export interface Product {
   id: number;
   name: string;
   description: string;
@@ -11,7 +11,7 @@
 }
 
 export interface ProductRequest {
-  id: number | null;
+  id?: number;
   name: string;
   description: string;
   availableQuantity: number;
@@ -19,23 +19,10 @@ export interface ProductRequest {
   categoryId: number;
 }
 
-export interface ProductUpdateRequest {
+export interface UpdateProductRequest {
   name?: string;
   description?: string;
   availableQuantity?: number;
   price?: number;
   categoryId?: number;
-}
-
-export interface ProductPurchasedRequest {
-  id: number;
-  availableQuantity: number;
-}
-
-export interface ProductPurchasedResponse {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  availableQuantity: number;
 }

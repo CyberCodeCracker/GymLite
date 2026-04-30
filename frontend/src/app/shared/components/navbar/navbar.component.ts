@@ -1,5 +1,5 @@
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { CartService } from '../../../core/services/cart.service';
@@ -8,39 +8,18 @@ import { CartService } from '../../../core/services/cart.service';
   selector: 'app-navbar',
   standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive],
-  templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.scss'
+  templateUrl: './navbar.component.html'
 })
 export class NavbarComponent {
-  @Output() cartToggle = new EventEmitter<void>();
+  private auth = inject(AuthService);
+  private cart = inject(CartService);
+  private router = inject(Router);
 
-  readonly authState$ = this.authService.authState$;
-  readonly itemCount$ = this.cartService.itemCount$;
+  mobileOpen = false;
+  readonly authState$ = this.auth.authState$;
+  readonly itemCount$ = this.cart.itemCount$;
 
-  constructor(
-    private readonly authService: AuthService,
-    private readonly cartService: CartService,
-    private readonly router: Router
-  ) {}
-
-  openCart(): void {
-    this.cartToggle.emit();
-  }
-
-  login(): void {
-    void this.router.navigate(['/login']);
-  }
-
-  register(): void {
-    void this.router.navigate(['/register']);
-  }
-
-  logout(): void {
-    this.authService.logout();
-    void this.router.navigate(['/login']);
-  }
-
-  isAdmin(): boolean {
-    return this.authService.isAdmin();
-  }
+  toggleMobile(): void { this.mobileOpen = !this.mobileOpen; }
+  logout(): void { this.auth.logout(); this.router.navigate(['/login']); }
+  isAdmin(): boolean { return this.auth.isAdmin(); }
 }

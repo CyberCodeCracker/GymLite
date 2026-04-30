@@ -1,0 +1,35 @@
+<section class="min-h-[80vh] flex items-center justify-center px-4">
+  <div class="card w-full max-w-md p-8">
+    <div class="text-center mb-8">
+      <i class="fa-solid fa-dumbbell text-brand text-3xl mb-3"></i>
+      <h1 class="text-2xl font-black text-ink">Welcome Back</h1>
+      <p class="text-sm text-ink-muted mt-1">Sign in to continue your grind</p>
+    </div>
+
+    <div class="space-y-4">
+      <div>
+        <label class="label">Email</label>
+        <input type="email" [(ngModel)]="email" placeholder="you@example.com" class="input" />
+      </div>
+      <div>
+        <label class="label">Password</label>
+        <div class="relative">
+          <input [type]="showPw ? 'text' : 'password'" [(ngModel)]="password" placeholder="Your password" class="input pr-10" />
+          <button type="button" (click)="showPw = !showPw"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-ink-faint hover:text-ink transition">
+            <i class="fa-solid" [ngClass]="showPw ? 'fa-eye-slash' : 'fa-eye'"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <button (click)="login()" [disabled]="loading || !email || !password" class="btn-primary w-full mt-6">
+      <i *ngIf="loading" class="fa-solid fa-spinner fa-spin"></i>
+      {{ loading ? 'Signing in...' : 'Sign In' }}
+    </button>
+
+    <p class="text-center text-sm text-ink-muted mt-5">
+      Don't have an account? <a routerLink="/register" class="text-brand hover:underline font-medium">Sign Up</a>
+    </p>
+  </div>
+</section>

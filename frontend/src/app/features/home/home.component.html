@@ -1,0 +1,66 @@
+<!-- Hero -->
+<section class="relative overflow-hidden bg-gradient-to-br from-surface via-surface-light to-surface py-24 md:py-36">
+  <div class="absolute inset-0 opacity-5">
+    <div class="absolute top-10 left-10 w-72 h-72 bg-brand rounded-full blur-[120px]"></div>
+    <div class="absolute bottom-10 right-10 w-96 h-96 bg-brand rounded-full blur-[160px]"></div>
+  </div>
+  <div class="container-app relative text-center">
+    <span class="badge-brand text-sm mb-4 inline-block">No Excuses. Just Results.</span>
+    <h1 class="text-4xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight text-ink">
+      Fuel Your <span class="text-brand">Grind</span>
+    </h1>
+    <p class="mt-4 text-lg md:text-xl text-ink-muted max-w-2xl mx-auto">
+      Premium gym equipment for those who never skip a day. From iron plates to power racks — gear that matches your intensity.
+    </p>
+    <div class="mt-8 flex flex-wrap justify-center gap-4">
+      <a routerLink="/products" class="btn-primary text-base px-8 py-3">Shop Now <i class="fa-solid fa-arrow-right ml-1"></i></a>
+      <a routerLink="/register" class="btn-secondary text-base px-8 py-3">Join the Team</a>
+    </div>
+  </div>
+</section>
+
+<!-- Stats -->
+<section class="border-y border-white/5 bg-surface-light py-10">
+  <div class="container-app grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+    <div>
+      <p class="text-3xl font-black text-brand">500+</p>
+      <p class="text-sm text-ink-muted mt-1">Products</p>
+    </div>
+    <div>
+      <p class="text-3xl font-black text-brand">24/7</p>
+      <p class="text-sm text-ink-muted mt-1">Support</p>
+    </div>
+    <div>
+      <p class="text-3xl font-black text-brand">10K+</p>
+      <p class="text-sm text-ink-muted mt-1">Happy Lifters</p>
+    </div>
+    <div>
+      <p class="text-3xl font-black text-brand">Free</p>
+      <p class="text-sm text-ink-muted mt-1">Shipping 50$+</p>
+    </div>
+  </div>
+</section>
+
+<!-- Featured -->
+<section class="py-16" *ngIf="featured.length">
+  <div class="container-app">
+    <div class="flex items-end justify-between mb-8">
+      <div>
+        <h2 class="text-2xl md:text-3xl font-black text-ink">Featured Gear</h2>
+        <p class="text-sm text-ink-muted mt-1">Top picks for serious lifters</p>
+      </div>
+      <a routerLink="/products" class="btn-ghost btn-sm hidden sm:inline-flex">View All <i class="fa-solid fa-arrow-right ml-1"></i></a>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <a *ngFor="let p of featured" [routerLink]="['/products', p.id]" class="card-hover group cursor-pointer">
+        <div class="aspect-square rounded-lg bg-surface-lighter mb-4 overflow-hidden flex items-center justify-center">
+          <img *ngIf="p.imageUrls?.length" [src]="p.imageUrls[0]" [alt]="p.name" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+          <i *ngIf="!p.imageUrls?.length" class="fa-solid fa-dumbbell text-4xl text-ink-faint"></i>
+        </div>
+        <p class="text-xs text-ink-faint uppercase tracking-wide">{{ p.categoryName }}</p>
+        <h3 class="text-sm font-semibold text-ink mt-1 truncate">{{ p.name }}</h3>
+        <p class="text-brand font-bold mt-1">{{ p.price | currency }}</p>
+      </a>
+    </div>
+  </div>
+</section>

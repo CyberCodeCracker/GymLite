@@ -1,7 +1,14 @@
 spring:
-  data:
-    mongodb:
-      uri: mongodb://glite:GliteEcom200@localhost:27017/auth?authSource=admin
+  datasource:
+    url: jdbc:postgresql://localhost:5434/auth
+    username: post
+    password: post
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
   application:
     security:
       jwt:

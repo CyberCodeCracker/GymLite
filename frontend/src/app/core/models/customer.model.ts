@@ -1,15 +1,12 @@
-﻿import { Address } from './address.model';
-
-export interface CustomerRequest {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  address: Address;
+export interface Address {
+  street: string;
+  city: string;
+  houseNumber: string;
+  zipCode: string;
 }
 
-export interface CustomerResponse {
-  id: string;
+export interface Customer {
+  id?: string;
   firstName: string;
   lastName: string;
   email: string;

@@ -1,13 +1,6 @@
 package org.amouri.ecommerce.auth;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
-@Builder
-public class AuthenticationResponse {
-    private String accessToken;
-    private String refreshToken;
-}
+public record AuthenticationResponse(
+        String accessToken,
+        String refreshToken
+) {}

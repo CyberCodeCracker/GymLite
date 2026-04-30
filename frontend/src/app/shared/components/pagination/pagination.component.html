@@ -1,0 +1,15 @@
+<nav *ngIf="totalPages > 1" class="flex items-center justify-center gap-1 mt-8">
+  <button (click)="go(currentPage - 1)" [disabled]="currentPage === 1"
+    class="btn-ghost btn-sm rounded-lg disabled:opacity-30">
+    <i class="fa-solid fa-chevron-left text-xs"></i>
+  </button>
+  <button *ngFor="let p of pages" (click)="go(p)"
+    class="min-w-[36px] h-9 rounded-lg text-sm font-medium transition-colors"
+    [ngClass]="p === currentPage ? 'bg-brand text-white' : 'text-ink-muted hover:bg-white/5 hover:text-ink'">
+    {{ p }}
+  </button>
+  <button (click)="go(currentPage + 1)" [disabled]="currentPage === totalPages"
+    class="btn-ghost btn-sm rounded-lg disabled:opacity-30">
+    <i class="fa-solid fa-chevron-right text-xs"></i>
+  </button>
+</nav>

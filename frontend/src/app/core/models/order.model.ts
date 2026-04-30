@@ -1,4 +1,4 @@
-﻿export type PaymentMethod = 'PAYPAL' | 'CREDIT_CARD' | 'VISA' | 'MASTER_CARD' | 'BITCOIN';
+export type PaymentMethod = 'PAYPAL' | 'CREDIT_CARD' | 'VISA' | 'MASTER_CARD' | 'BITCOIN';
 
 export interface PurchaseRequest {
   id: number;
@@ -6,8 +6,6 @@ export interface PurchaseRequest {
 }
 
 export interface OrderRequest {
-  id: number | null;
-  reference: string;
   totalAmount: number;
   paymentMethod: PaymentMethod;
   customerId: string;
@@ -20,9 +18,4 @@ export interface OrderResponse {
   amount: number;
   paymentMethod: PaymentMethod;
   customerId: string;
-}
-
-export interface OrderLineResponse {
-  id: number;
-  quantity: number;
 }

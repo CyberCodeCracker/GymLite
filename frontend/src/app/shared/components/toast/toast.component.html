@@ -1,0 +1,16 @@
+<div class="fixed top-4 right-4 z-[9999] flex flex-col gap-2 max-w-sm w-full pointer-events-none">
+  <div *ngFor="let t of items$ | async"
+    class="pointer-events-auto flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium shadow-xl border animate-slide-in"
+    [ngClass]="{
+      'bg-green-900/90 border-green-700 text-green-100': t.type === 'success',
+      'bg-red-900/90 border-red-700 text-red-100': t.type === 'error',
+      'bg-surface-light border-white/10 text-ink': t.type === 'info'
+    }">
+    <i class="fa-solid text-base"
+      [ngClass]="{ 'fa-circle-check': t.type==='success', 'fa-circle-xmark': t.type==='error', 'fa-circle-info': t.type==='info' }"></i>
+    <span class="flex-1">{{ t.message }}</span>
+    <button (click)="dismiss(t.id)" class="ml-2 opacity-60 hover:opacity-100 transition">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+</div>
