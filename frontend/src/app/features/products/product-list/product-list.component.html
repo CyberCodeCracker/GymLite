@@ -1,26 +1,35 @@
 <section class="container-app py-8">
-  <!-- Header -->
   <div class="mb-6">
     <h1 class="text-3xl font-black text-ink">Shop Equipment</h1>
     <p class="text-sm text-ink-muted mt-1">{{ filtered.length }} products available</p>
   </div>
 
   <!-- Filter bar -->
-  <div class="flex flex-col sm:flex-row gap-3 mb-8">
-    <div class="relative flex-1">
+  <div class="flex flex-col sm:flex-row gap-3 mb-8 items-stretch sm:items-center">
+    <div class="relative flex-1 min-w-0">
       <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint text-sm z-10"></i>
-      <input type="text" [(ngModel)]="search" (ngModelChange)="page=1" placeholder="Search products..." class="input !pl-8" />
+      <input type="text" [(ngModel)]="search" (ngModelChange)="onSearchInput()" (blur)="hideSuggestions()" (focus)="onSearchInput()"
+        placeholder="Search products..." class="input !pl-10" />
+      <div *ngIf="showSuggestions && suggestions.length" class="absolute top-full left-0 right-0 mt-1 rounded-lg shadow-xl overflow-hidden z-20"
+        style="background: var(--surface); border: 1px solid var(--border)">
+        <button *ngFor="let s of suggestions" (mousedown)="selectSuggestion(s.name)"
+          class="flex items-center gap-3 w-full px-4 py-2.5 text-left text-sm text-ink hover:bg-surface-lighter transition">
+          <i class="fa-solid fa-magnifying-glass text-ink-faint text-xs"></i>
+          <span>{{ s.name }}</span>
+          <span class="ml-auto text-xs text-ink-faint">{{ s.categoryName }}</span>
+        </button>
+      </div>
     </div>
-    <select [(ngModel)]="selectedCategory" (ngModelChange)="page=1" class="input w-full sm:w-48">
+    <select [(ngModel)]="selectedCategory" (ngModelChange)="page=1" class="input w-full sm:w-48 flex-shrink-0">
       <option [ngValue]="0">All Categories</option>
       <option *ngFor="let c of categories" [ngValue]="c.id">{{ c.name }}</option>
     </select>
-    <select [(ngModel)]="sortBy" class="input w-full sm:w-44">
+    <select [(ngModel)]="sortBy" class="input w-full sm:w-44 flex-shrink-0">
       <option value="name">Sort: Name</option>
       <option value="price-asc">Price: Low-High</option>
       <option value="price-desc">Price: High-Low</option>
     </select>
-    <button *ngIf="search || selectedCategory || sortBy !== 'name'" (click)="resetFilters()" class="btn-ghost btn-sm whitespace-nowrap">
+    <button *ngIf="search || selectedCategory || sortBy !== 'name'" (click)="resetFilters()" class="btn-ghost btn-sm whitespace-nowrap flex-shrink-0 animate-fade-in">
       <i class="fa-solid fa-xmark"></i> Clear
     </button>
   </div>
@@ -37,7 +46,7 @@
 
   <!-- Product grid -->
   <div *ngIf="!loading && paged.length" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-    <div *ngFor="let p of paged" class="card-hover group flex flex-col">
+    <div *ngFor="let p of paged; let i = index" class="card-hover group flex flex-col animate-card-in" [style.animation-delay]="i * 50 + 'ms'">
       <a [routerLink]="['/products', p.id]" class="block">
         <div class="aspect-square rounded-lg bg-surface-lighter mb-4 overflow-hidden flex items-center justify-center">
           <img *ngIf="p.imageUrls?.length" [src]="p.imageUrls[0]" [alt]="p.name" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
@@ -46,10 +55,21 @@
       </a>
       <p class="text-xs text-ink-faint uppercase tracking-wide">{{ p.categoryName }}</p>
       <a [routerLink]="['/products', p.id]" class="text-sm font-semibold text-ink mt-1 truncate hover:text-brand transition">{{ p.name }}</a>
-      <div class="flex items-center justify-between mt-auto pt-3">
-        <span class="text-brand font-bold">{{ p.price | currency }}</span>
-        <button (click)="addToCart(p)" class="btn-primary btn-sm">
-          <i class="fa-solid fa-cart-plus"></i>
+      <span class="text-brand font-bold mt-1">{{ p.price | currency }}</span>
+
+      <!-- Quantity + Add to cart -->
+      <div class="flex items-center gap-2 mt-auto pt-3">
+        <div class="flex items-center rounded-lg text-sm" style="border: 1px solid var(--border-input)">
+          <button (click)="setQty(p.id, getQty(p.id) - 1)" class="px-2 py-1.5 text-ink-muted hover:text-ink transition">
+            <i class="fa-solid fa-minus text-[10px]"></i>
+          </button>
+          <span class="w-7 text-center text-ink text-xs">{{ getQty(p.id) }}</span>
+          <button (click)="setQty(p.id, getQty(p.id) + 1)" class="px-2 py-1.5 text-ink-muted hover:text-ink transition">
+            <i class="fa-solid fa-plus text-[10px]"></i>
+          </button>
+        </div>
+        <button (click)="addToCart(p)" class="btn-primary btn-sm flex-1">
+          <i class="fa-solid fa-cart-plus"></i> Add
         </button>
       </div>
     </div>

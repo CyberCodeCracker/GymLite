@@ -1,4 +1,5 @@
 export type PaymentMethod = 'PAYPAL' | 'CREDIT_CARD' | 'VISA' | 'MASTER_CARD' | 'BITCOIN';
+export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
 
 export interface PurchaseRequest {
   id: number;
@@ -17,5 +18,6 @@ export interface OrderResponse {
   reference: string;
   amount: number;
   paymentMethod: PaymentMethod;
+  status: OrderStatus;
   customerId: string;
 }

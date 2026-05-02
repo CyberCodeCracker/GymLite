@@ -1,6 +1,7 @@
 package org.amouri.ecommerce.DTOs;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.amouri.ecommerce.enums.OrderStatus;
 import org.amouri.ecommerce.enums.PaymentMethod;
 
 import java.math.BigDecimal;
@@ -11,6 +12,7 @@ public record OrderResponse(
         String reference,
         BigDecimal amount,
         PaymentMethod paymentMethod,
+        OrderStatus status,
         String customerId
 ) {
 }

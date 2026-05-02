@@ -1,12 +1,12 @@
-<header class="sticky top-0 z-50 border-b border-white/5 bg-surface/80 backdrop-blur-lg">
-  <div class="container-app flex h-16 items-center justify-between">
+<header class="fixed left-0 top-0 z-50 w-full bg-surface/80 backdrop-blur-lg" style="border-bottom: 1px solid var(--border)">
+  <div class="container-app relative flex h-16 items-center justify-between">
     <!-- Logo -->
     <a routerLink="/" class="flex items-center gap-2 text-xl font-black tracking-tight text-ink">
       <i class="fa-solid fa-dumbbell text-brand"></i>GymLite
     </a>
 
     <!-- Desktop nav -->
-    <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+    <nav class="hidden md:flex items-center gap-6 text-sm font-medium absolute left-1/2 -translate-x-1/2">
       <a routerLink="/products" routerLinkActive="text-brand" class="text-ink-muted hover:text-ink transition">Shop</a>
       <ng-container *ngIf="authState$ | async as s">
         <ng-container *ngIf="s.authenticated && isAdmin()">
@@ -16,15 +16,37 @@
     </nav>
 
     <!-- Desktop actions -->
-    <div class="hidden md:flex items-center gap-3">
+    <div class="hidden md:flex items-center gap-2">
+      <button (click)="theme.toggle()" class="btn-ghost btn-sm" title="Toggle theme">
+        <i class="fa-solid" [ngClass]="theme.isDark ? 'fa-sun' : 'fa-moon'"></i>
+      </button>
       <a routerLink="/cart" class="btn-ghost btn-sm relative">
         <i class="fa-solid fa-cart-shopping"></i>
         <span *ngIf="(itemCount$ | async) as c" class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-brand text-[10px] font-bold text-white">{{ c }}</span>
       </a>
       <ng-container *ngIf="authState$ | async as s">
         <ng-container *ngIf="s.authenticated; else loggedOut">
-          <span class="text-sm text-ink-muted">{{ s.user?.firstName }}</span>
-          <button (click)="logout()" class="btn-secondary btn-sm">Logout</button>
+          <!-- User dropdown -->
+          <div class="relative user-menu-wrapper">
+            <button (click)="toggleUserMenu()" class="btn-ghost btn-sm flex items-center gap-2">
+              <i class="fa-solid fa-circle-user text-brand"></i>
+              <span class="text-sm text-ink">{{ s.user?.firstName }}</span>
+              <i class="fa-solid fa-chevron-down text-[10px] text-ink-faint transition-transform" [class.rotate-180]="userMenuOpen"></i>
+            </button>
+            <div *ngIf="userMenuOpen" class="absolute right-0 top-full mt-2 w-48 rounded-lg shadow-xl overflow-hidden animate-fade-in"
+              style="background: var(--surface); border: 1px solid var(--border)">
+              <div class="px-4 py-3" style="border-bottom: 1px solid var(--border)">
+                <p class="text-sm font-medium text-ink">{{ s.user?.firstName }} {{ s.user?.lastName }}</p>
+                <p class="text-xs text-ink-faint truncate">{{ s.user?.email }}</p>
+              </div>
+              <a routerLink="/my-orders" (click)="userMenuOpen=false" class="flex items-center gap-2 px-4 py-2.5 text-sm text-ink-muted hover:text-ink hover:bg-surface-lighter transition">
+                <i class="fa-solid fa-receipt text-xs"></i> My Orders
+              </a>
+              <button (click)="logout()" class="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-red-400 hover:bg-surface-lighter transition text-left">
+                <i class="fa-solid fa-right-from-bracket text-xs"></i> Logout
+              </button>
+            </div>
+          </div>
         </ng-container>
         <ng-template #loggedOut>
           <a routerLink="/login" class="btn-secondary btn-sm">Sign In</a>
@@ -40,18 +62,26 @@
   </div>
 
   <!-- Mobile menu -->
-  <div *ngIf="mobileOpen" class="md:hidden border-t border-white/5 bg-surface px-4 pb-4 pt-2 space-y-2">
+  <div *ngIf="mobileOpen" class="md:hidden bg-surface px-4 pb-4 pt-2 space-y-2" style="border-top: 1px solid var(--border)">
     <a routerLink="/products" (click)="mobileOpen=false" class="block py-2 text-sm text-ink-muted hover:text-ink">Shop</a>
     <a routerLink="/cart" (click)="mobileOpen=false" class="block py-2 text-sm text-ink-muted hover:text-ink">
       <i class="fa-solid fa-cart-shopping mr-2"></i>Cart
       <span *ngIf="(itemCount$ | async) as c" class="badge-brand ml-1">{{ c }}</span>
     </a>
+    <button (click)="theme.toggle()" class="block w-full text-left py-2 text-sm text-ink-muted hover:text-ink">
+      <i class="fa-solid mr-2" [ngClass]="theme.isDark ? 'fa-sun' : 'fa-moon'"></i>{{ theme.isDark ? 'Light Mode' : 'Dark Mode' }}
+    </button>
     <ng-container *ngIf="authState$ | async as s">
       <ng-container *ngIf="s.authenticated && isAdmin()">
         <a routerLink="/admin/products" (click)="mobileOpen=false" class="block py-2 text-sm text-ink-muted hover:text-ink">Admin</a>
       </ng-container>
       <ng-container *ngIf="s.authenticated; else mobileLoggedOut">
-        <button (click)="logout(); mobileOpen=false" class="btn-secondary btn-sm w-full mt-2">Logout</button>
+        <a routerLink="/my-orders" (click)="mobileOpen=false" class="block py-2 text-sm text-ink-muted hover:text-ink">
+          <i class="fa-solid fa-receipt mr-2"></i>My Orders
+        </a>
+        <button (click)="logout(); mobileOpen=false" class="btn-secondary btn-sm w-full mt-2 text-red-400">
+          <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+        </button>
       </ng-container>
       <ng-template #mobileLoggedOut>
         <div class="flex gap-2 mt-2">

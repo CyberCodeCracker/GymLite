@@ -4,20 +4,28 @@
   <div class="overflow-x-auto">
     <table class="w-full text-sm">
       <thead>
-        <tr class="border-b border-white/10 text-left text-ink-muted">
+        <tr class="text-left text-ink-muted" style="border-bottom: 1px solid var(--border)">
           <th class="pb-3 font-medium">ID</th>
           <th class="pb-3 font-medium">Reference</th>
           <th class="pb-3 font-medium">Amount</th>
           <th class="pb-3 font-medium hidden sm:table-cell">Payment</th>
+          <th class="pb-3 font-medium">Status</th>
           <th class="pb-3 font-medium hidden md:table-cell">Customer</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let o of paged" class="border-b border-white/5 hover:bg-white/[0.02]">
+        <tr *ngFor="let o of paged" style="border-bottom: 1px solid var(--border)">
           <td class="py-3 text-ink-muted">#{{ o.id }}</td>
-          <td class="py-3 font-medium text-ink">{{ o.reference }}</td>
+          <td class="py-3 font-mono text-xs text-ink">{{ o.reference }}</td>
           <td class="py-3 text-brand font-medium">{{ o.amount | currency }}</td>
           <td class="py-3 text-ink-muted hidden sm:table-cell">{{ formatMethod(o.paymentMethod) }}</td>
+          <td class="py-3">
+            <select [ngModel]="o.status" (ngModelChange)="onStatusChange(o.id, $event)"
+              class="order-status-select input !py-1 !px-3 !text-xs font-semibold"
+              [ngStyle]="statusStyle(o.status)">
+              <option *ngFor="let s of statuses" [ngValue]="s">{{ s }}</option>
+            </select>
+          </td>
           <td class="py-3 text-ink-muted hidden md:table-cell font-mono text-xs">{{ o.customerId }}</td>
         </tr>
       </tbody>

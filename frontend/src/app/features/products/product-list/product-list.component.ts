@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -17,6 +17,11 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
   templateUrl: './product-list.component.html'
 })
 export class ProductListComponent implements OnInit {
+  private productService = inject(ProductService);
+  private categoryService = inject(CategoryService);
+  private cart = inject(CartService);
+  private toast = inject(ToastService);
+
   allProducts: Product[] = [];
   categories: Category[] = [];
   search = '';
@@ -25,17 +30,18 @@ export class ProductListComponent implements OnInit {
   page = 1;
   pageSize = 12;
   loading = true;
-
-  constructor(
-    private productService: ProductService,
-    private categoryService: CategoryService,
-    private cart: CartService,
-    private toast: ToastService
-  ) {}
+  showSuggestions = false;
+  quantities: { [id: number]: number } = {};
 
   ngOnInit(): void {
-    this.productService.findAll().subscribe((p: Product[]) => { this.allProducts = p; this.loading = false; });
-    this.categoryService.findAll().subscribe((c: Category[]) => this.categories = c);
+    this.productService.findAll().subscribe(p => { this.allProducts = p; this.loading = false; });
+    this.categoryService.findAll().subscribe(c => this.categories = c);
+  }
+
+  get suggestions(): Product[] {
+    if (!this.search || this.search.length < 2) return [];
+    const s = this.search.toLowerCase();
+    return this.allProducts.filter(p => p.name.toLowerCase().includes(s)).slice(0, 5);
   }
 
   get filtered(): Product[] {
@@ -56,11 +62,19 @@ export class ProductListComponent implements OnInit {
     return this.filtered.slice(start, start + this.pageSize);
   }
 
+  onSearchInput(): void { this.page = 1; this.showSuggestions = this.search.length >= 2; }
+  selectSuggestion(name: string): void { this.search = name; this.showSuggestions = false; this.page = 1; }
+  hideSuggestions(): void { setTimeout(() => this.showSuggestions = false, 200); }
   onPageChange(p: number): void { this.page = p; window.scrollTo({ top: 0, behavior: 'smooth' }); }
   resetFilters(): void { this.search = ''; this.selectedCategory = 0; this.sortBy = 'name'; this.page = 1; }
 
+  getQty(id: number): number { return this.quantities[id] ?? 1; }
+  setQty(id: number, val: number): void { this.quantities[id] = Math.max(1, val); }
+
   addToCart(p: Product): void {
-    this.cart.add({ productId: p.id, name: p.name, price: p.price, quantity: 1, imageUrl: p.imageUrls?.[0] ?? '' });
-    this.toast.success(`${p.name} added to cart`);
+    const qty = this.getQty(p.id);
+    this.cart.add({ productId: p.id, name: p.name, price: p.price, quantity: qty, imageUrl: p.imageUrls?.[0] ?? '' });
+    this.toast.success(`${p.name} x${qty} added to cart`);
+    this.quantities[p.id] = 1;
   }
 }

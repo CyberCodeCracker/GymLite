@@ -2,6 +2,7 @@ package org.amouri.ecommerce.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.amouri.ecommerce.enums.OrderStatus;
 import org.amouri.ecommerce.enums.PaymentMethod;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -31,6 +32,10 @@ public class Order {
 
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private OrderStatus status = OrderStatus.PENDING;
 
     private String customerId;
 

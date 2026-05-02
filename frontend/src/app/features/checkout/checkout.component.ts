@@ -76,4 +76,17 @@ export class CheckoutComponent {
   }
 
   formatMethod(m: string): string { return m.replace(/_/g, ' '); }
+
+  paymentIconClass(method: PaymentMethod): string {
+    const base = 'text-xl w-5 shrink-0 text-center';
+    const icons: Record<PaymentMethod, string> = {
+      VISA: 'fa-solid fa-credit-card text-blue-400',
+      MASTER_CARD: 'fa-solid fa-credit-card text-orange-400',
+      PAYPAL: 'fa-solid fa-credit-card text-blue-300',
+      CREDIT_CARD: 'fa-solid fa-credit-card text-emerald-400',
+      BITCOIN: 'fa-brands fa-bitcoin text-yellow-400'
+    };
+
+    return `${icons[method]} ${base}`;
+  }
 }

@@ -24,6 +24,18 @@ export class AdminProductsComponent implements OnInit {
   loading = false;
   page = 1;
   pageSize = 10;
+  searchTerm = '';
+  categoryFilter = 'all';
+  stockFilter = 'all';
+  private readonly categoryPalette = [
+    { hue: '#ef4444', darkText: '#fca5a5', lightText: '#b91c1c' },
+    { hue: '#3b82f6', darkText: '#93c5fd', lightText: '#1d4ed8' },
+    { hue: '#22c55e', darkText: '#86efac', lightText: '#15803d' },
+    { hue: '#a855f7', darkText: '#d8b4fe', lightText: '#7e22ce' },
+    { hue: '#f59e0b', darkText: '#fcd34d', lightText: '#b45309' },
+    { hue: '#14b8a6', darkText: '#5eead4', lightText: '#0f766e' },
+    { hue: '#ec4899', darkText: '#f9a8d4', lightText: '#be185d' }
+  ];
 
   constructor(
     private productService: ProductService,
@@ -34,9 +46,42 @@ export class AdminProductsComponent implements OnInit {
   ngOnInit(): void { this.load(); this.categoryService.findAll().subscribe((c: Category[]) => this.categories = c); }
   load(): void { this.productService.findAll().subscribe((p: Product[]) => this.products = p); }
 
+  get filteredProducts(): Product[] {
+    const query = this.searchTerm.trim().toLowerCase();
+
+    return this.products.filter(product => {
+      const matchesSearch = !query ||
+        product.name.toLowerCase().includes(query) ||
+        product.categoryName.toLowerCase().includes(query);
+      const matchesCategory = this.categoryFilter === 'all' || String(product.categoryId) === this.categoryFilter;
+      const matchesStock =
+        this.stockFilter === 'all' ||
+        (this.stockFilter === 'in-stock' && product.availableQuantity > 0) ||
+        (this.stockFilter === 'out-of-stock' && product.availableQuantity <= 0);
+
+      return matchesSearch && matchesCategory && matchesStock;
+    });
+  }
+
   get paged(): Product[] {
     const s = (this.page - 1) * this.pageSize;
-    return this.products.slice(s, s + this.pageSize);
+    return this.filteredProducts.slice(s, s + this.pageSize);
+  }
+
+  onFilterChange(): void { this.page = 1; }
+
+  categoryStyle(product: Product): Record<string, string> {
+    const color = this.categoryPalette[this.categoryColorIndex(product)];
+    return {
+      '--category-hue': color.hue,
+      '--category-dark-text': color.darkText,
+      '--category-light-text': color.lightText
+    };
+  }
+
+  private categoryColorIndex(product: Product): number {
+    const key = product.categoryId || product.categoryName.length;
+    return Math.abs(key) % this.categoryPalette.length;
   }
 
   openCreate(): void {

@@ -1,0 +1,12 @@
+<nav *ngIf="breadcrumbs.length" class="container-app pt-5 text-sm" aria-label="Breadcrumb">
+  <ol class="flex flex-wrap items-center gap-2 text-ink-muted">
+    <li>
+      <a routerLink="/" class="hover:text-ink transition">Home</a>
+    </li>
+    <li *ngFor="let crumb of breadcrumbs; let last = last" class="flex items-center gap-2">
+      <i class="fa-solid fa-chevron-right text-[10px] text-ink-faint"></i>
+      <a *ngIf="crumb.url && !last" [routerLink]="crumb.url" class="hover:text-ink transition">{{ crumb.label }}</a>
+      <span *ngIf="!crumb.url || last" class="font-medium text-ink">{{ crumb.label }}</span>
+    </li>
+  </ol>
+</nav>

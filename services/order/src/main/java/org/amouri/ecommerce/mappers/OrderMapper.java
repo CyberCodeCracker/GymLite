@@ -15,8 +15,7 @@ public class OrderMapper {
                 .reference(request.reference())
                 .totalAmount(request.totalAmount())
                 .paymentMethod(request.paymentMethod())
-                .build()
-                ;
+                .build();
     }
 
     public OrderResponse toOrderResponse(Order order) {
@@ -25,6 +24,7 @@ public class OrderMapper {
                 order.getReference(),
                 order.getTotalAmount(),
                 order.getPaymentMethod(),
+                order.getStatus(),
                 order.getCustomerId()
         );
     }

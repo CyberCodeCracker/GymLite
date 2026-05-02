@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.amouri.ecommerce.DTOs.*;
 import org.amouri.ecommerce.entities.Order;
+import org.amouri.ecommerce.enums.OrderStatus;
 import org.amouri.ecommerce.exception.BusinessException;
 import org.amouri.ecommerce.interfaces.CustomerClient;
 import org.amouri.ecommerce.interfaces.PaymentClient;
@@ -14,6 +15,7 @@ import org.amouri.ecommerce.repositories.OrderRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,7 +38,9 @@ public class OrderService {
 
         var purchasedProducts = this.productClient.purchaseProducts(request.products());
 
-        var order = this.repository.save(mapper.toOrder(request));
+        var order = mapper.toOrder(request);
+        order.setReference("ORD-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+        order = this.repository.save(order);
 
         for (PurchaseRequest purchaseRequest: request.products()){
             orderLineService.saveOrderLine(
@@ -81,12 +85,25 @@ public class OrderService {
         return repository.findAll()
                 .stream()
                 .map(mapper::toOrderResponse)
-                .collect(Collectors.toList())
-                ;
+                .collect(Collectors.toList());
+    }
+
+    public List<OrderResponse> getByCustomerId(String customerId) {
+        return repository.findByCustomerIdOrderByCreatedAtDesc(customerId)
+                .stream()
+                .map(mapper::toOrderResponse)
+                .collect(Collectors.toList());
     }
 
     public OrderResponse getById(Integer orderId) {
         var order = getOrderById(orderId);
+        return mapper.toOrderResponse(order);
+    }
+
+    public OrderResponse updateStatus(Integer orderId, OrderStatus status) {
+        var order = getOrderById(orderId);
+        order.setStatus(status);
+        repository.save(order);
         return mapper.toOrderResponse(order);
     }
 

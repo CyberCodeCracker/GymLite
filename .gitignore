@@ -22,3 +22,7 @@ Thumbs.db
 
 # Env
 *.env
+
+
+# Seeders with credentials
+**/AdminSeeder.java
